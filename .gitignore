@@ -1,0 +1,19 @@
+node_modules/
+.next/
+out/
+build/
+
+.env
+.env.local
+.env*.local
+
+next-env.d.ts
+*.tsbuildinfo
+
+.DS_Store
+*.pem
+npm-debug.log*
+.vercel
+
+# Folder build khusus pengujian, terpisah dari .next milik dev server
+.next-cek/

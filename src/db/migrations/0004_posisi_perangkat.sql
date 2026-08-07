@@ -1,0 +1,1 @@
+ALTER TABLE "perangkat_desa" ADD COLUMN "posisi" varchar(40);

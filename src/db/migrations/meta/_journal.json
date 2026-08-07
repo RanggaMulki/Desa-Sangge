@@ -1,0 +1,90 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1784371858672,
+      "tag": "0000_awal",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1784481282834,
+      "tag": "0001_batas_wilayah",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1784532520913,
+      "tag": "0002_kunci_objek_media",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1784549096148,
+      "tag": "0003_tabel_misi",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1784551136084,
+      "tag": "0004_posisi_perangkat",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1784648545923,
+      "tag": "0005_infografis",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1784650286946,
+      "tag": "0006_pengaturan",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1784947485895,
+      "tag": "0007_futuristic_metal_master",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1785287691274,
+      "tag": "0008_overconfident_wildside",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1785315969920,
+      "tag": "0009_sharp_saracen",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1785432863285,
+      "tag": "0010_material_peter_parker",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1785953737659,
+      "tag": "0011_tiresome_blur",
+      "breakpoints": true
+    }
+  ]
+}

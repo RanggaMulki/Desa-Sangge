@@ -1,0 +1,330 @@
+@import "tailwindcss";
+
+@theme {
+  /* --- Palet "Natural & Earthy" -----------------------------
+     Empat warna dasar yang diminta: hijau lumut, navy, cokelat,
+     dan krem. Nama token DIPERTAHANKAN (hijau-utama, dst.) supaya
+     seluruh komponen ikut berganti warna tanpa harus diubah satu
+     per satu.
+
+       hijau  #4f6339  utama: tombol, header, judul, aksen
+       navy   #2e303e  teks utama
+       cokelat#493932  aksen hangat & seksi gelap
+       krem   #ece8d3  latar
+
+     Kontras sudah diperiksa: putih di atas hijau 6,5:1; navy di
+     atas krem 11:1; hijau/teks-redup di atas krem >5:1. */
+  --color-hijau-utama: #4f6339; /* hijau lumut — warna utama */
+  --color-hijau-pekat: #3a4a2b; /* hijau lebih tua — gradasi & hover */
+  --color-hijau-muda: #dfe4d1; /* hijau pucat — lencana & seksi terang */
+  --color-oker: #493932; /* cokelat earthy — aksen hangat */
+
+  /* Merah kalender hanya untuk hari Minggu, libur nasional, dan cuti
+     bersama. Berbeda dari merah layanan darurat agar maknanya tidak rancu. */
+  --color-merah-kalender: #963b35;
+  --color-merah-kalender-pekat: #772e2a;
+  --color-merah-kalender-muda: #f5e2df;
+
+  /* Khusus KPPA dan kontak darurat. Jangan dipakai untuk hal lain,
+     sinyal daruratnya jadi hilang. */
+  --color-merah-layanan: oklch(0.52 0.17 25);
+
+  /* Aksen hangat infografis (terracotta, senada palet earthy) —
+     dipakai menandai perempuan pada grafik & kartu. Sebagai isi
+     marka/lencana, bukan warna teks angka. */
+  --color-oranye-data: #b6552f; /* isi lencana/ikon perempuan */
+  --color-oranye-muda: #f0ddce; /* latar lencana perempuan */
+
+  --color-latar: #f3f0e5; /* krem terang — badan halaman */
+  --color-permukaan: #ece8d3; /* krem palet — seksi selang-seling */
+  --color-tinta: #2e303e; /* navy — teks utama */
+  --color-tinta-redup: #56534a; /* cokelat-abu — teks redup */
+  --color-garis: #d9d3bf; /* garis halus di atas krem */
+
+  /* --- Tipografi --------------------------------------------
+     Ukuran dasar 17px, bukan 16px. Sasaran pembaca mencakup
+     lansia dan ibu balita (proker posyandu), jadi keterbacaan
+     lebih diutamakan daripada kepadatan informasi. */
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+
+  --text-dasar: 1.0625rem;
+  --text-dasar--line-height: 1.7;
+}
+
+:root {
+  /**
+   * Dipakai header lengket dan panel menu HP supaya tingginya selalu sama.
+   * 5rem, bukan 4.5rem, supaya lambang desa berukuran 56px pada layar lebar
+   * masih punya ruang napas di atas dan bawahnya.
+   */
+  --tinggi-header: 5rem;
+
+  /* Gradien tema berada di satu tempat agar perubahan palet mengalir ke
+     header, kanvas, seluruh seksi, data penduduk, dan footer. */
+  --gradien-kanvas: linear-gradient(180deg, #f7f7f2 0%, #ece8d3 100%);
+  --gradien-header: linear-gradient(
+    105deg,
+    #3a4a2b 0%,
+    #4f6339 72%,
+    #445230 100%
+  );
+  --gradien-seksi-terang: linear-gradient(
+    180deg,
+    #f7f7f2 0%,
+    #ece8d3 100%
+  );
+  --gradien-seksi-permukaan: radial-gradient(
+    120% 90% at 50% 10%,
+    #f4f5ee 0%,
+    #e5e9dc 58%,
+    #dfe4d1 100%
+  );
+  --gradien-seksi-hijau: linear-gradient(
+    145deg,
+    #dfe4d1 0%,
+    #cfd8c1 100%
+  );
+  --gradien-data: linear-gradient(
+    120deg,
+    #2e303e 0%,
+    #333938 52%,
+    #3a4a2b 100%
+  );
+  --gradien-footer: conic-gradient(
+    from 210deg at 25% 15%,
+    #2e303e 0deg,
+    #493932 120deg,
+    #3a4a2b 240deg,
+    #2e303e 360deg
+  );
+  --gradien-kepala-galeri: linear-gradient(
+    112deg,
+    #2e303e 0%,
+    #3a4a2b 42%,
+    #4f6339 72%,
+    #493932 100%
+  );
+  --gradien-arsip-galeri: linear-gradient(
+    145deg,
+    #f7f7f2 0%,
+    #ece8d3 52%,
+    #dfe4d1 100%
+  );
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+
+    /**
+     * Warna kanvas browser, bukan warna halaman.
+     *
+     * Kalau <html> tidak diberi warna, browser mengambilnya dari <body>.
+     * Akibatnya saat halaman digulir melewati batas atas dan memantul
+     * (rubber-band di macOS, overscroll di HP), area yang tersingkap di atas
+     * header dicat putih dan terlihat seperti header lepas dari atas.
+     *
+     * Disamakan dengan warna header supaya pantulan itu tidak terlihat.
+     */
+    background-color: var(--color-hijau-utama);
+  }
+
+  body {
+    min-height: 100vh;
+    background: var(--gradien-kanvas);
+    color: var(--color-tinta);
+    font-size: var(--text-dasar);
+    line-height: 1.7;
+    font-kerning: normal;
+    font-optical-sizing: auto;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+    letter-spacing: 0;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Area sentuh minimal 44px: dipakai dari HP sambil berdiri. */
+  button,
+  a[role="button"] {
+    min-height: 44px;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-hijau-utama);
+    outline-offset: 2px;
+  }
+
+  /**
+   * Perubahan saat disentuh/diarahkan berlangsung halus, bukan mengedip.
+   *
+   * Ini yang membuat halaman terasa hidup tanpa menambah satu byte pun
+   * JavaScript: seluruhnya CSS. Durasinya pendek (150 ms) supaya terasa sigap,
+   * bukan lamban — kurva ease-out, tanpa pantulan.
+   *
+   * Blok prefers-reduced-motion di bawah otomatis mematikannya bagi pengguna
+   * yang memilih mengurangi gerak.
+   */
+  a,
+  button,
+  summary,
+  input,
+  textarea,
+  select {
+    transition:
+      color 150ms cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 150ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 150ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 150ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Umpan balik sentuh di HP: kartu/tombol menekan sedikit saat ditekan.
+     Lebih terasa daripada hover, karena di HP tidak ada hover sama sekali. */
+  button:active {
+    transform: translateY(1px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ================================================================
+   Micro-animasi interaktif — halaman terasa hidup tanpa JavaScript
+   ================================================================ */
+
+@layer base {
+  /* Kartu yang bisa disentuh/dihover: naik sedikit + bayangan membesar */
+  .kartu-interaktif {
+    transition:
+      transform 250ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 250ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 250ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .kartu-interaktif:active {
+    transform: translateY(-1px);
+  }
+
+  /* Garis bawah tautan yang tumbuh dari kiri saat dihover */
+  .tautan-garis {
+    position: relative;
+  }
+  .tautan-garis::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--color-hijau-utama);
+    transition: width 300ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .tautan-garis:hover::after {
+    width: 100%;
+  }
+}
+
+@media (hover: hover) {
+  .kartu-interaktif:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgb(46 48 62 / 0.1);
+  }
+}
+
+@layer utilities {
+  .judul-hero-beranda {
+    font-size: clamp(3rem, 2.25rem + 3vw, 5.25rem);
+    font-weight: 800;
+    line-height: 1.04;
+  }
+
+  .judul-seksi-beranda {
+    font-size: clamp(2rem, 1.75rem + 1vw, 2.75rem);
+    font-weight: 800;
+    line-height: 1.12;
+  }
+
+  .latar-seksi-terang {
+    background: var(--gradien-seksi-terang);
+  }
+
+  .latar-seksi-permukaan {
+    background: var(--gradien-seksi-permukaan);
+  }
+
+  .latar-seksi-hijau {
+    background: var(--gradien-seksi-hijau);
+  }
+
+  .latar-data-earthy {
+    background: var(--gradien-data);
+  }
+
+  .latar-footer-earthy {
+    background: var(--gradien-footer);
+  }
+
+  .latar-kepala-galeri {
+    background: var(--gradien-kepala-galeri);
+  }
+
+  .latar-arsip-galeri {
+    background-color: var(--color-permukaan);
+    background-image: var(--gradien-arsip-galeri);
+  }
+
+  .kisi-arsip-galeri {
+    background-image:
+      linear-gradient(rgba(79, 99, 57, 0.075) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79, 99, 57, 0.075) 1px, transparent 1px);
+    background-position: center top;
+    background-size: 4.5rem 4.5rem;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 78%);
+    mask-image: linear-gradient(to bottom, #000 0%, transparent 78%);
+  }
+
+  .masuk-halus {
+    animation: masuk-halus 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: var(--jeda-masuk, 0ms);
+  }
+
+  .menu-masuk {
+    animation: menu-masuk 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+@keyframes masuk-halus {
+  from {
+    opacity: 0.82;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes menu-masuk {
+  from {
+    opacity: 0.9;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

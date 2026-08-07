@@ -1,0 +1,1 @@
+ALTER TABLE "media" ADD COLUMN "kunci_objek" varchar(400) NOT NULL;
