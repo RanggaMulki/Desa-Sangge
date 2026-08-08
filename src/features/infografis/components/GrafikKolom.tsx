@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
   Bar,
   BarChart,
@@ -17,7 +17,6 @@ import type { Butir } from "../kategori";
 import { TabelData } from "./TabelData";
 import { TampilanData } from "./TampilanData";
 
-type ModeGrafik = "jumlah" | "persen";
 type DataGrafik = Butir & { persen: number };
 
 const FORMAT_PERSEN = new Intl.NumberFormat("id-ID", {
@@ -58,21 +57,25 @@ function TooltipBatang({
  *
  * Polanya mengadaptasi Chart with Tooltip dari shadcn/21st.dev. Batang
  * horizontal dipilih karena label data desa cukup panjang dan harus tetap
- * terbaca di HP. Pengunjung dapat berpindah antara jumlah jiwa dan persentase;
- * tooltip tetap menampilkan keduanya saat batang disentuh atau diarahkan.
+ * terbaca di HP. Batang selalu menampilkan jumlah; tooltip dan tabel tetap
+ * menyertakan persentase sebagai informasi pendamping.
  */
 export function GrafikKolom({
   butir,
   satuan = "jiwa",
+  totalAcuan,
+  labelTotal,
 }: {
   butir: Butir[];
   satuan?: string;
+  totalAcuan?: number;
+  labelTotal?: string;
 }) {
-  const [mode, setMode] = useState<ModeGrafik>("jumlah");
-  const total = useMemo(
+  const jumlahButir = useMemo(
     () => butir.reduce((nilai, item) => nilai + item.nilai, 0),
     [butir],
   );
+  const total = totalAcuan ?? jumlahButir;
   const data = useMemo<DataGrafik[]>(
     () =>
       butir.map((item) => ({
@@ -82,105 +85,72 @@ export function GrafikKolom({
     [butir, total],
   );
   const tinggi = Math.max(290, data.length * 49);
-  const dataKey = mode === "jumlah" ? "nilai" : "persen";
 
   return (
     <TampilanData
       label="Pilih tampilan grafik atau tabel"
       grafik={
-        <>
-          <div className="mb-5 flex justify-end">
-            <div
-              role="group"
-              aria-label="Nilai yang ditampilkan pada grafik"
-              className="grid grid-cols-2 overflow-hidden rounded-lg border border-garis bg-latar"
+        <div
+          role="img"
+          aria-label={`Grafik jumlah ${satuan} untuk ${data.length} golongan`}
+          style={{ height: tinggi }}
+          className="w-full"
+        >
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              accessibilityLayer
+              data={data}
+              layout="vertical"
+              margin={{ top: 4, right: 18, bottom: 4, left: 0 }}
             >
-              <button
-                type="button"
-                aria-pressed={mode === "jumlah"}
-                onClick={() => setMode("jumlah")}
-                className={`min-h-11 px-4 text-sm font-bold ${
-                  mode === "jumlah"
-                    ? "bg-hijau-utama text-white"
-                    : "text-tinta hover:bg-permukaan"
-                }`}
-              >
-                Jumlah
-              </button>
-              <button
-                type="button"
-                aria-pressed={mode === "persen"}
-                onClick={() => setMode("persen")}
-                className={`min-h-11 border-l border-garis px-4 text-sm font-bold ${
-                  mode === "persen"
-                    ? "bg-hijau-utama text-white"
-                    : "text-tinta hover:bg-permukaan"
-                }`}
-              >
-                Persentase
-              </button>
-            </div>
-          </div>
-
-          <div
-            role="img"
-            aria-label={`Grafik ${mode === "jumlah" ? `jumlah ${satuan}` : "persentase"} untuk ${data.length} golongan`}
-            style={{ height: tinggi }}
-            className="w-full"
-          >
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                accessibilityLayer
-                data={data}
-                layout="vertical"
-                margin={{ top: 4, right: 18, bottom: 4, left: 0 }}
-              >
-                <CartesianGrid
-                  horizontal={false}
-                  stroke="var(--color-garis)"
-                  strokeDasharray="3 4"
-                />
-                <XAxis
-                  type="number"
-                  axisLine={false}
-                  tickLine={false}
-                  tickMargin={8}
-                  tick={{ fill: "var(--color-tinta-redup)", fontSize: 12 }}
-                  tickFormatter={(value: number) =>
-                    mode === "jumlah"
-                      ? angka(value)
-                      : `${FORMAT_PERSEN.format(value)}%`
-                  }
-                />
-                <YAxis
-                  type="category"
-                  dataKey="label"
-                  width={132}
-                  axisLine={false}
-                  tickLine={false}
-                  tickMargin={10}
-                  tick={{ fill: "var(--color-tinta-redup)", fontSize: 12 }}
-                />
-                <Tooltip
-                  content={(props) => (
-                    <TooltipBatang {...props} satuan={satuan} />
-                  )}
-                  cursor={{ fill: "var(--color-permukaan)", fillOpacity: 0.7 }}
-                  wrapperStyle={{ outline: "none", zIndex: 10 }}
-                />
-                <Bar
-                  dataKey={dataKey}
-                  fill={BATANG}
-                  maxBarSize={27}
-                  radius={[0, 5, 5, 0]}
-                  isAnimationActive={false}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </>
+              <CartesianGrid
+                horizontal={false}
+                stroke="var(--color-garis)"
+                strokeDasharray="3 4"
+              />
+              <XAxis
+                type="number"
+                axisLine={false}
+                tickLine={false}
+                tickMargin={8}
+                tick={{ fill: "var(--color-tinta-redup)", fontSize: 12 }}
+                tickFormatter={(value: number) => angka(value)}
+              />
+              <YAxis
+                type="category"
+                dataKey="label"
+                width={132}
+                axisLine={false}
+                tickLine={false}
+                tickMargin={10}
+                tick={{ fill: "var(--color-tinta-redup)", fontSize: 12 }}
+              />
+              <Tooltip
+                content={(props) => (
+                  <TooltipBatang {...props} satuan={satuan} />
+                )}
+                cursor={{ fill: "var(--color-permukaan)", fillOpacity: 0.7 }}
+                wrapperStyle={{ outline: "none", zIndex: 10 }}
+              />
+              <Bar
+                dataKey="nilai"
+                fill={BATANG}
+                maxBarSize={27}
+                radius={[0, 5, 5, 0]}
+                isAnimationActive={false}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       }
-      tabel={<TabelData butir={butir} satuan={satuan} />}
+      tabel={
+        <TabelData
+          butir={butir}
+          satuan={satuan}
+          totalAcuan={totalAcuan}
+          labelTotal={labelTotal}
+        />
+      }
     />
   );
 }

@@ -26,9 +26,8 @@ export function FormSambutan({ kontenAwal }: { kontenAwal: string }) {
       <div className="rounded-xl border border-garis bg-white p-5">
         <p className="mb-3 text-sm text-tinta-redup">
           Tulis kata sambutan Kepala Desa yang tampil di halaman depan. Cukup
-          satu sampai dua paragraf. Foto dan nama Kepala Desa diambil otomatis
-          dari <strong>Bagan &amp; Perangkat</strong>, jadi tidak perlu ditulis
-          lagi di sini. Kalau kotak ini dikosongkan, kutipan sambutannya
+          satu sampai dua paragraf. Nama dan foto Kepala Desa diatur di kolom
+          terpisah di atas. Kalau kotak ini dikosongkan, kutipan sambutannya
           disembunyikan dari beranda.
         </p>
         <EditorArtikel nilai={konten} onChange={setKonten} />

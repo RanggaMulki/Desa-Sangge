@@ -68,7 +68,8 @@ export default async function DetailInformasi({
   return (
     <HalamanArtikel
       slug={slug}
-      basis={`/informasi/${info.kode}`}
+      // "Kembali" menuju seksi kategori di halaman gabungan /informasi.
+      basis={`/informasi#${info.kode}`}
       kategoriSah={[info.kode]}
     />
   );

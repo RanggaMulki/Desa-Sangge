@@ -5,12 +5,10 @@ import { TabInfografis } from "@/features/infografis/components/TabInfografis";
 import {
   ambilInfografisPerKategori,
   ambilMetadataPenduduk,
-  ambilMetadataStunting,
-  ambilStuntingPerKategori,
+  ambilRingkasanStunting,
 } from "@/features/infografis/queries";
 import { ambilStatistik } from "@/features/statistik/queries";
 import { KATEGORI_INFOGRAFIS } from "@/features/infografis/kategori";
-import { KATEGORI_STUNTING } from "@/features/infografis/stunting";
 import { TAB_INFOGRAFIS, type KunciTab } from "@/features/infografis/tab";
 
 export const metadata = { title: "Infografis" };
@@ -90,24 +88,6 @@ async function PanelPenduduk() {
 
 /** Form angka risiko stunting balita. */
 async function PanelStunting() {
-  const [peta, metadata] = await Promise.all([
-    ambilStuntingPerKategori(),
-    ambilMetadataStunting(),
-  ]);
-
-  const nilaiAwal: Record<string, Record<string, number>> = {};
-  for (const k of KATEGORI_STUNTING) {
-    const map: Record<string, number> = {};
-    for (const b of peta.get(k.kunci) ?? []) map[b.label] = b.nilai;
-    nilaiAwal[k.kunci] = map;
-  }
-
-  return (
-    <FormStunting
-      nilaiAwal={nilaiAwal}
-      periodeAwal={metadata.periode}
-      sumberNamaAwal={metadata.sumberNama}
-      sumberUrlAwal={metadata.sumberUrl}
-    />
-  );
+  const ringkasan = await ambilRingkasanStunting();
+  return <FormStunting ringkasanAwal={ringkasan} />;
 }

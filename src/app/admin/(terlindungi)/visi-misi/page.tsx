@@ -5,7 +5,7 @@ import { ambilVisiMisi } from "@/features/halaman-statis/queries";
 export const metadata = { title: "Visi & Misi" };
 
 export default async function KelolaVisiMisi() {
-  const { visi, misi } = await ambilVisiMisi();
+  const { visi, misiHtml } = await ambilVisiMisi();
 
   return (
     <>
@@ -13,7 +13,7 @@ export default async function KelolaVisiMisi() {
         judul="Visi & Misi"
         keterangan="Isi visi dan misi Desa Sangge. Perubahan langsung tampil di halaman Profil."
       />
-      <FormVisiMisi visi={visi} misi={misi.map((m) => m.teks)} />
+      <FormVisiMisi visi={visi} misiHtml={misiHtml} />
     </>
   );
 }

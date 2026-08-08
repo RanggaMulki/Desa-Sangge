@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import { KartuArtikel, type RingkasanArtikel } from "./KartuArtikel";
 import { KotakKosong } from "@/features/tata-letak/components/KotakKosong";
@@ -33,8 +34,12 @@ export function DaftarArtikel({
 
   return (
     <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-      {artikel.map((a) => (
-        <li key={a.id}>
+      {artikel.map((a, i) => (
+        <li
+          key={a.id}
+          className="masuk-halus"
+          style={{ "--jeda-masuk": `${(i % 6) * 70}ms` } as CSSProperties}
+        >
           <KartuArtikel artikel={a} basis={basis} />
         </li>
       ))}

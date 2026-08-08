@@ -200,13 +200,11 @@ export const batasWilayah = pgTable("batas_wilayah", {
 });
 
 /**
- * Butir misi desa, satu baris per poin.
+ * Butir misi desa versi lama, satu baris per poin.
  *
- * Visi (satu pernyataan) tetap di `halamanStatis` slug "visi", tapi misi
- * dipisah ke tabelnya sendiri karena bentuknya daftar bernomor, bukan
- * paragraf. Disimpan sebagai baris terpisah supaya form pengelolaan (Fase 2)
- * cukup daftar isian berulang, bukan editor HTML — jauh lebih mudah bagi
- * pengurus desa. Pola yang sama dengan batasWilayah dan statistikDesa.
+ * Data ini tetap dipertahankan sebagai cadangan untuk instalasi yang belum
+ * pernah menyimpan melalui editor teks kaya. Setelah disimpan, dokumen Misi
+ * utama berada di `halamanStatis` dengan slug "misi".
  */
 export const misi = pgTable("misi", {
   id: uuid("id").primaryKey().defaultRandom(),

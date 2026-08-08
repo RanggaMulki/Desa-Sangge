@@ -84,7 +84,8 @@ async function main() {
       konten: KONTEN_SEJARAH_DESA,
     },
     {
-      // Hanya pernyataan visi. Butir misi ada di tabel `misi` sendiri.
+      // Dokumen Misi baru dibuat saat pertama disimpan. Sebelum itu query
+      // masih membaca butir lama dari tabel `misi` sebagai cadangan.
       slug: "visi",
       judul: "Visi Desa",
       konten: "",

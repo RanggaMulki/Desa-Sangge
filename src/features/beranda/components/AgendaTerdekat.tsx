@@ -19,7 +19,6 @@ export async function AgendaTerdekat() {
       <JudulSeksi
         judul="Agenda"
         aksen="Terdekat"
-        keterangan="Jadwal kegiatan desa yang akan datang."
         tautan={{ label: "Lihat semua agenda", href: "/agenda" }}
       />
 

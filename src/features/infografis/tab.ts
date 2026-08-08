@@ -31,9 +31,9 @@ export const TAB_INFOGRAFIS: {
     kunci: "stunting",
     label: "Risiko Stunting",
     href: "/infografis/stunting",
-    judul: "Risiko Stunting Balita",
+    judul: "Risiko Stunting",
     keterangan:
-      "Data pemantauan tumbuh kembang balita dan pencegahan stunting di Desa Sangge.",
+      "Data ibu hamil berisiko KEK dan kondisi gizi balita di Desa Sangge.",
   },
 ];
 

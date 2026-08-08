@@ -20,7 +20,6 @@ export function PerangkatRingkas() {
       <JudulSeksi
         judul="Struktur Pemerintahan"
         aksen="Desa"
-        keterangan="Susunan organisasi dan tata kerja Pemerintah Desa Sangge."
         tautan={{
           label: "Lihat struktur lengkap",
           href: "/profil/pemerintahan",

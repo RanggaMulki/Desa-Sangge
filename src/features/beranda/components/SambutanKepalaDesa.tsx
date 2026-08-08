@@ -37,9 +37,9 @@ export async function SambutanKepalaDesa() {
   return (
     <Seksi latar="terang" aria-labelledby="judul-sambutan">
       <ScrollReveal>
-        <div className="grid items-center gap-8 md:grid-cols-[15rem_minmax(0,1fr)] md:gap-10 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-14">
-          <div className="mx-auto w-44 sm:w-52 md:w-60 lg:w-64">
-            <div className="aspect-square overflow-hidden rounded-full bg-hijau-muda ring-8 ring-hijau-muda/70">
+        <div className="grid items-start gap-7 md:grid-cols-[15rem_minmax(0,1fr)] md:items-center md:gap-10 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-14">
+          <div className="mx-auto w-full max-w-72 sm:max-w-80 md:w-60 md:max-w-none lg:w-64">
+            <div className="aspect-square overflow-hidden rounded-full bg-hijau-muda ring-4 ring-hijau-muda/70 sm:ring-6 md:ring-8">
               {fotoUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -58,12 +58,12 @@ export async function SambutanKepalaDesa() {
           <div className="min-w-0">
             <h2
               id="judul-sambutan"
-              className="judul-seksi-beranda text-balance text-hijau-pekat"
+              className="judul-seksi-beranda text-balance text-center text-hijau-pekat md:text-left"
             >
               Sambutan <span className="text-oker">Kepala Desa</span>
             </h2>
 
-            <div className="mt-4">
+            <div className="mt-3 text-center md:mt-4 md:text-left">
               <p className="text-lg font-extrabold uppercase leading-tight text-hijau-utama">
                 {kades.nama}
               </p>
@@ -73,7 +73,7 @@ export async function SambutanKepalaDesa() {
             </div>
 
             {naskah !== "" && (
-              <blockquote className="mt-6 max-w-3xl border-t border-garis pt-5 text-base leading-[1.75] text-tinta sm:text-lg">
+              <blockquote className="mx-auto mt-5 max-w-3xl border-t border-garis pt-5 text-justify text-base leading-[1.75] text-tinta sm:text-lg md:mx-0 md:mt-6">
                 <KontenAman html={naskah} />
               </blockquote>
             )}

@@ -40,14 +40,14 @@ export function KartuArtikel({
         className="group flex h-full flex-col overflow-hidden rounded-xl border border-garis bg-white hover:-translate-y-0.5 hover:border-hijau-utama hover:shadow-[0_4px_12px_rgb(0_0_0/0.07)]"
       >
         {artikel.gambarSampulUrl && (
-          <div className="relative aspect-[16/9] bg-permukaan">
+          <div className="relative aspect-[16/9] overflow-hidden bg-permukaan">
             <Image
               src={artikel.gambarSampulUrl}
               alt=""
               fill
               sizes="(min-width: 1024px) 22rem, (min-width: 640px) 45vw, 92vw"
               quality={80}
-              className="object-cover"
+              className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
             />
           </div>
         )}

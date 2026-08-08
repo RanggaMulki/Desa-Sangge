@@ -8,11 +8,10 @@ import {
   SUMBER_PADUKAN_SANGGE,
 } from "./penduduk";
 import {
-  KATA_STUNTING_TBU,
   KATEGORI_STUNTING,
   KUNCI_PENGATURAN_STUNTING,
   SUMBER_STUNTING_DEFAULT,
-  type KategoriStunting,
+  susunRingkasanStunting,
 } from "./stunting";
 
 /**
@@ -104,42 +103,22 @@ export const ambilStunting = cache(async function () {
   }));
 });
 
-/**
- * Angka pokok yang DITURUNKAN dari data TB/U, bukan disimpan terpisah:
- * balita diukur, jumlah stunting (Pendek + Sangat Pendek), prevalensinya, dan
- * jumlah balita (dari jenis kelamin bila ada, kalau tidak dari yang diukur).
- * Menghitung di sini menjaga angka kartu selalu konsisten dengan grafiknya.
- */
+/** Rekap ibu hamil dan balita yang dipublikasikan pada halaman stunting. */
 export const ambilRingkasanStunting = cache(async function () {
-  const kelompok = await ambilStunting();
-  const jumlahKategori = (kunci: KategoriStunting) =>
-    (kelompok.find((k) => k.kunci === kunci)?.butir ?? []).reduce(
-      (total, b) => total + b.nilai,
-      0,
-    );
-
-  const tbu = kelompok.find((k) => k.kunci === "stunting-tbu")?.butir ?? [];
-  const diukur = tbu.reduce((total, b) => total + b.nilai, 0);
-  const stunting = tbu
-    .filter((b) => b.label.toLowerCase().includes(KATA_STUNTING_TBU))
-    .reduce((total, b) => total + b.nilai, 0);
-  const jenisKelamin = jumlahKategori("stunting-jenis-kelamin");
-
-  return {
-    jumlahBalita: jenisKelamin > 0 ? jenisKelamin : diukur,
-    diukur,
-    stunting,
-    prevalensi: diukur > 0 ? (stunting / diukur) * 100 : 0,
-  };
+  const baris = await db.select().from(pengaturan);
+  return susunRingkasanStunting(
+    new Map(baris.map((item) => [item.kunci, item.nilai])),
+  );
 });
 
 /** Periode dan sumber yang menyertai grafik stunting. */
 export const ambilMetadataStunting = cache(async function () {
   const baris = await db.select().from(pengaturan);
   const nilai = new Map(baris.map((item) => [item.kunci, item.nilai]));
+  const ringkasan = susunRingkasanStunting(nilai);
 
   return {
-    periode: nilai.get(KUNCI_PENGATURAN_STUNTING.periode) ?? "",
+    periode: ringkasan.periode,
     sumberNama:
       nilai.get(KUNCI_PENGATURAN_STUNTING.sumberNama) ??
       SUMBER_STUNTING_DEFAULT.nama,

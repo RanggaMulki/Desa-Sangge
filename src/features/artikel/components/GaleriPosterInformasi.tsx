@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { tanggalPendek } from "@/lib/format";
@@ -38,14 +39,18 @@ export function GaleriPosterInformasi({
       {poster.length > 0 ? (
         <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6">
           {poster.map((item, i) => (
-            <li key={item.id}>
+            <li
+              key={item.id}
+              className="masuk-halus"
+              style={{ "--jeda-masuk": `${(i % 6) * 70}ms` } as CSSProperties}
+            >
               <Link
                 href={`${basis}/${item.slug}`}
                 aria-label={`Buka poster ${item.judul}`}
-                className="group block h-full overflow-hidden rounded-lg border border-garis bg-white hover:border-hijau-utama"
+                className="kartu-interaktif group block h-full overflow-hidden rounded-lg border border-garis bg-white hover:border-hijau-utama"
               >
                 <figure>
-                  <div className="relative aspect-[3/4] bg-white">
+                  <div className="relative aspect-[3/4] overflow-hidden bg-white">
                     <Image
                       src={item.gambarSampulUrl!}
                       alt={item.judul}
@@ -53,8 +58,20 @@ export function GaleriPosterInformasi({
                       priority={i < 3}
                       sizes="(min-width: 640px) 30vw, 46vw"
                       quality={85}
-                      className="object-contain transition-transform duration-200 group-hover:scale-[1.01]"
+                      className="object-contain transition-transform duration-500 ease-out group-hover:scale-[1.06]"
                     />
+                    {/* Judul poster tersembunyi saat diam, naik dari bawah saat
+                        di-hover. Untuk pengguna mouse ini memberi label yang
+                        selama ini hanya ada di sr-only. Di HP (tanpa hover)
+                        posternya tetap bersih. */}
+                    <div
+                      aria-hidden="true"
+                      className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-3 bg-gradient-to-t from-black/75 via-black/35 to-transparent px-3 pb-3 pt-9 opacity-0 transition-all duration-300 ease-out group-hover:translate-y-0 group-hover:opacity-100"
+                    >
+                      <span className="line-clamp-2 text-sm font-semibold leading-snug text-white">
+                        {item.judul}
+                      </span>
+                    </div>
                   </div>
                   <figcaption className="sr-only">
                     {item.judul}

@@ -80,6 +80,8 @@ export const STATISTIK_MANUAL_RESMI: {
 }[] = [
   { kunci: "luas", label: "Luas Wilayah", nilai: 447, satuan: "Ha", tahun: 2026, urutan: 7 },
   { kunci: "dusun", label: "Jumlah Dusun", nilai: 3, satuan: "dusun", tahun: 2026, urutan: 8 },
+  { kunci: "dukuh", label: "Jumlah Dukuh", nilai: 7, satuan: "dukuh", tahun: 2026, urutan: 9 },
+  { kunci: "rt", label: "Jumlah RT", nilai: 26, satuan: "RT", tahun: 2026, urutan: 10 },
 ];
 
 export const BATAS_WILAYAH_RESMI: {

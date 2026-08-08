@@ -3,11 +3,10 @@
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { batasWilayah, media, perangkatDesa } from "@/db/schema";
+import { media, perangkatDesa } from "@/db/schema";
 import { hapusDariR2 } from "@/lib/r2";
 import { unggahMedia } from "@/features/media/actions";
 import { slotTerurut } from "./struktur";
-import { ARAH_WILAYAH } from "./wilayah";
 import { pastikanPengurus } from "@/features/auth/queries";
 
 export type HasilSimpan = { ok: boolean; pesan: string };
@@ -67,6 +66,63 @@ export async function simpanNamaPerangkat(
     return { ok: true, pesan: "Perubahan tersimpan." };
   } catch (e) {
     console.error("Gagal menyimpan nama perangkat:", e);
+    return { ok: false, pesan: "Gagal menyimpan. Coba lagi sebentar." };
+  }
+}
+
+/** Posisi Kepala Desa — dipakai bersama oleh bagan dan halaman Sambutan. */
+const POSISI_KADES = "kepala-desa";
+
+/**
+ * Menyimpan HANYA nama Kepala Desa, dari halaman Sambutan.
+ *
+ * Menulis ke baris perangkat posisi "kepala-desa" — SUMBER YANG SAMA dengan
+ * Bagan & Perangkat — supaya nama di beranda, bagan, dan sambutan tidak pernah
+ * berbeda. Sengaja terpisah dari `simpanNamaPerangkat` (yang menyapu semua
+ * slot): form Sambutan hanya punya satu field, jadi memakai aksi itu justru
+ * akan mengosongkan nama jabatan lain.
+ */
+export async function simpanNamaKepalaDesa(
+  _sebelumnya: HasilSimpan | null,
+  formData: FormData,
+): Promise<HasilSimpan> {
+  await pastikanPengurus();
+  try {
+    const nama = ((formData.get("nama") as string) ?? "").trim();
+
+    const [ada] = await db
+      .select({ id: perangkatDesa.id })
+      .from(perangkatDesa)
+      .where(
+        and(
+          eq(perangkatDesa.posisi, POSISI_KADES),
+          eq(perangkatDesa.aktif, true),
+        ),
+      )
+      .limit(1);
+
+    if (ada) {
+      await db
+        .update(perangkatDesa)
+        .set({ nama })
+        .where(eq(perangkatDesa.id, ada.id));
+    } else if (nama) {
+      const slot = slotTerurut().find((s) => s.kunci === POSISI_KADES);
+      await db.insert(perangkatDesa).values({
+        posisi: POSISI_KADES,
+        jabatan: slot?.jabatan ?? "Kepala Desa",
+        nama,
+        urutan: slot?.urutan ?? 0,
+      });
+    }
+
+    // Beranda menampilkan kartu sambutan; profil menampilkan bagan.
+    revalidatePath("/");
+    revalidatePath("/profil");
+    revalidatePath("/profil/pemerintahan");
+    return { ok: true, pesan: "Nama Kepala Desa tersimpan." };
+  } catch (e) {
+    console.error("Gagal menyimpan nama Kepala Desa:", e);
     return { ok: false, pesan: "Gagal menyimpan. Coba lagi sebentar." };
   }
 }
@@ -212,55 +268,4 @@ export async function hapusFotoPerangkat(posisi: string): Promise<HasilFoto> {
   revalidatePath("/profil");
   revalidatePath("/profil/pemerintahan");
   return { ok: true, pesan: "Foto dihapus." };
-}
-
-/**
- * Menyimpan batas wilayah keempat arah sekaligus.
- *
- * Arahnya tetap empat — pengurus desa hanya mengubah keterangannya, tidak bisa
- * menambah atau menghapus arah.
- *
- * Seluruh isian diperiksa LEBIH DULU sebelum satu pun disimpan. Kalau
- * pemeriksaan dilakukan sambil menyimpan, arah yang lolos duluan sudah
- * terlanjur tersimpan saat arah berikutnya ditolak — pengurus melihat pesan
- * "gagal" padahal sebagian datanya sudah berubah.
- *
- * Daftar arah diambil dari wilayah.ts, bukan ditulis ulang di sini, supaya
- * tidak ada dua daftar yang bisa berbeda isi.
- */
-export async function simpanBatasWilayah(
-  _sebelumnya: HasilSimpan | null,
-  formData: FormData,
-): Promise<HasilSimpan> {
-  await pastikanPengurus();
-  const isian = ARAH_WILAYAH.map((a) => ({
-    arah: a.kunci,
-    label: a.label,
-    keterangan: ((formData.get(`keterangan-${a.kunci}`) as string) ?? "").trim(),
-  }));
-
-  const kosong = isian.find((i) => !i.keterangan);
-  if (kosong) {
-    return { ok: false, pesan: `${kosong.label} belum diisi. Isi dulu, ya.` };
-  }
-
-  try {
-    for (const i of isian) {
-      // Kolom `arah` unik, jadi satu perintah cukup: buat kalau belum ada,
-      // perbarui kalau sudah.
-      await db
-        .insert(batasWilayah)
-        .values({ arah: i.arah, keterangan: i.keterangan })
-        .onConflictDoUpdate({
-          target: batasWilayah.arah,
-          set: { keterangan: i.keterangan },
-        });
-    }
-
-    revalidatePath("/profil");
-    return { ok: true, pesan: "Perubahan tersimpan." };
-  } catch (e) {
-    console.error("Gagal menyimpan batas wilayah:", e);
-    return { ok: false, pesan: "Gagal menyimpan. Coba lagi sebentar." };
-  }
 }

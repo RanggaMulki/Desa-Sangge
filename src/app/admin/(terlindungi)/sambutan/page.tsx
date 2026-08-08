@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { JudulPengelolaan } from "@/features/admin/components/SedangDisiapkan";
 import { FormSambutan } from "@/features/halaman-statis/components/FormSambutan";
+import { FormNamaKepalaDesa } from "@/features/halaman-statis/components/FormNamaKepalaDesa";
 import { UnggahFotoSambutan } from "@/features/halaman-statis/components/UnggahFotoSambutan";
 import {
   ambilFotoSambutan,
@@ -26,9 +27,10 @@ export default async function Kelola() {
     <div className="masuk-halus">
       <JudulPengelolaan
         judul="Sambutan Kepala Desa"
-        keterangan="Foto dan kata sambutan yang tampil di halaman depan. Nama Kepala Desa mengikuti data Bagan & Perangkat."
+        keterangan="Nama, foto, dan kata sambutan yang tampil di halaman depan. Nama Kepala Desa juga otomatis ikut di Bagan & Perangkat."
       />
       <div className="max-w-3xl space-y-5">
+        <FormNamaKepalaDesa namaAwal={kades?.nama ?? ""} />
         <UnggahFotoSambutan
           fotoSambutan={fotoSambutan}
           fotoKades={kades?.fotoUrl ?? null}

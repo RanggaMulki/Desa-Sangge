@@ -1,16 +1,17 @@
 /**
- * Daftar halaman statis yang selalu ada.
+ * Daftar slug halaman statis yang dikenali aplikasi.
  *
- * Halaman-halaman ini di-seed sekali lalu hanya diubah isinya lewat halaman
- * pengelolaan. Tidak pernah dibuat atau dihapus dari UI, karena setiap
- * slug-nya sudah dipakai sebagai alamat halaman di app/.
+ * Sebagian dibuat saat seed, sedangkan dokumen baru seperti Misi dibuat lewat
+ * upsert ketika pertama kali disimpan. Semuanya memiliki slug tetap karena
+ * dipakai sebagai kontrak antara query dan halaman pengelolaan.
  */
 export const SLUG_HALAMAN = {
   profil: "profil-desa",
   sejarah: "sejarah",
-  // Hanya pernyataan visi. Butir misi disimpan di tabel `misi` sendiri,
-  // karena bentuknya daftar, bukan paragraf.
+  // Visi dan misi disimpan sebagai HTML dari editor teks kaya. Tabel `misi`
+  // lama tetap dibaca sebagai cadangan sampai pengurus menyimpan lewat editor.
   visi: "visi",
+  misi: "misi",
   kppa: "kppa",
   // Naskah sambutan Kepala Desa. Berbeda dari slug lain, ini TIDAK punya
   // alamat halaman sendiri: dipakai sebagai seksi di beranda. Seksinya

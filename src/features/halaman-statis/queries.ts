@@ -6,6 +6,11 @@ import {
   SLUG_HALAMAN,
   type SlugHalaman,
 } from "./halaman";
+import {
+  ambilButirMisiHtml,
+  gabungkanMisiHtml,
+  normalkanHtml,
+} from "./visi-misi-html";
 
 /**
  * Ambil satu halaman statis.
@@ -43,19 +48,33 @@ export async function ambilFotoSambutan(): Promise<string | null> {
 /**
  * Visi (satu pernyataan) dan misi (daftar) untuk bagian Profil.
  *
- * Diambil bersama dalam satu fungsi karena selalu ditampilkan berdampingan.
- * Visi bisa berupa string kosong dan misi bisa berupa array kosong; komponen
- * penampil yang memutuskan menampilkan keadaan kosong, bukan query ini.
+ * Diambil bersama karena digunakan sebagai satu bagian pada halaman Profil.
+ * Visi bisa berupa string kosong dan Misi bisa berupa array kosong; komponen
+ * penampil yang memutuskan keadaan kosong, bukan query ini.
  */
 export async function ambilVisiMisi() {
   const halamanVisi = await ambilHalaman(SLUG_HALAMAN.visi);
+  const halamanMisi = await ambilHalaman(SLUG_HALAMAN.misi);
   const daftarMisi = await db
     .select({ id: misi.id, teks: misi.teks })
     .from(misi)
     .orderBy(asc(misi.urutan));
 
+  const visi = normalkanHtml(halamanVisi?.konten ?? "");
+  // Baris misi lama tetap menjadi cadangan agar pembaruan ini tidak membuat
+  // isi website yang sudah ada mendadak hilang. Setelah editor baru disimpan,
+  // dokumen HTML-nya menjadi sumber utama.
+  const misiHtml = halamanMisi
+    ? normalkanHtml(halamanMisi.konten)
+    : gabungkanMisiHtml(daftarMisi);
+  const butirMisi = ambilButirMisiHtml(misiHtml);
+
   return {
-    visi: halamanVisi?.konten?.trim() ?? "",
-    misi: daftarMisi,
+    visi,
+    misiHtml,
+    misi: butirMisi.map((teks, index) => ({
+      id: `misi-html-${index + 1}`,
+      teks,
+    })),
   };
 }

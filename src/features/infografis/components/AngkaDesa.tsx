@@ -1,18 +1,13 @@
-import { ExternalLink } from "lucide-react";
 import { angka } from "@/lib/format";
 import { ambilStatistik } from "@/features/statistik/queries";
-import {
-  ambilJenisKelamin,
-  ambilMetadataPenduduk,
-} from "../queries";
+import { ambilJenisKelamin } from "../queries";
 import { IkonOrang, IkonRumah, IkonLaki, IkonPerempuan } from "../ikon";
 import { KartuIkon } from "./KartuIkon";
 
 export async function AngkaDesa() {
-  const [statistik, gender, metadata] = await Promise.all([
+  const [statistik, gender] = await Promise.all([
     ambilStatistik(),
     ambilJenisKelamin(),
-    ambilMetadataPenduduk(),
   ]);
 
   const penduduk = statistik.find((s) => s.kunci === "penduduk") ?? null;
@@ -81,25 +76,6 @@ export async function AngkaDesa() {
           />
         ))}
       </div>
-
-      <p className="flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-garis bg-white px-5 py-4 text-sm text-tinta-redup sm:px-8">
-        <span>Sumber:</span>
-        {metadata.sumberUrl ? (
-          <a
-            href={metadata.sumberUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex min-h-11 items-center gap-1.5 font-semibold text-hijau-utama underline underline-offset-4 hover:text-hijau-pekat"
-          >
-            {metadata.sumberNama}
-            <ExternalLink aria-hidden="true" className="size-4" />
-          </a>
-        ) : (
-          <strong className="font-semibold text-tinta">
-            {metadata.sumberNama}
-          </strong>
-        )}
-      </p>
     </section>
   );
 }

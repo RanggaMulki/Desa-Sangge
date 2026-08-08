@@ -25,7 +25,10 @@ export function SeksiBerjudul({
       aria-labelledby={`judul-${id}`}
       className="scroll-mt-[calc(var(--tinggi-header)+1.5rem)]"
     >
-      <h2 id={`judul-${id}`} className="text-2xl font-bold">
+      <h2
+        id={`judul-${id}`}
+        className="judul-seksi-beranda text-balance text-hijau-pekat"
+      >
         {judul}
       </h2>
       {keterangan && <p className="mt-1 text-tinta-redup">{keterangan}</p>}

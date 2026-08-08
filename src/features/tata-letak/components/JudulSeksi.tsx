@@ -10,12 +10,10 @@ import Link from "next/link";
 export function JudulSeksi({
   judul,
   aksen,
-  keterangan,
   tautan,
 }: {
   judul: string;
   aksen?: string;
-  keterangan?: string;
   tautan?: { label: string; href: string };
 }) {
   return (
@@ -25,11 +23,6 @@ export function JudulSeksi({
           {judul}
           {aksen && <span className="text-oker"> {aksen}</span>}
         </h2>
-        {keterangan && (
-          <p className="mt-3 max-w-[65ch] leading-relaxed text-tinta-redup">
-            {keterangan}
-          </p>
-        )}
       </div>
       {tautan && (
         <Link

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { KepalaHalaman } from "@/features/tata-letak/components/KepalaHalaman";
 import { SeksiAgenda } from "@/features/agenda/components/SeksiAgenda";
+import { KepalaHalamanTerpusat } from "@/features/tata-letak/components/KepalaHalamanTerpusat";
 
 export const metadata: Metadata = {
   title: "Agenda Kegiatan",
@@ -12,12 +12,11 @@ export const revalidate = 3600;
 
 export default function AgendaKegiatan() {
   return (
-    <div className="mx-auto max-w-7xl px-5 py-12 sm:py-14 lg:px-8">
-      <KepalaHalaman
-        judul="Agenda Kegiatan"
-        keterangan="Kalender kegiatan desa dengan hari pasaran Jawa pada setiap tanggal."
-      />
-      <SeksiAgenda />
+    <div className="min-h-screen bg-latar">
+      <KepalaHalamanTerpusat judul="Agenda Kegiatan" />
+      <div className="mx-auto max-w-7xl px-5 pb-12 pt-4 sm:pb-14 sm:pt-5 lg:px-8">
+        <SeksiAgenda />
+      </div>
     </div>
   );
 }

@@ -26,15 +26,14 @@ export const MENU_UTAMA: ButirMenu[] = [
    */
   { label: "Profil Desa", href: "/profil" },
   { label: "Infografis", href: "/infografis" },
-  {
-    label: "Informasi",
-    /** Tanpa halaman indeks sendiri, jadi induknya menuju kanal pertama. */
-    href: "/informasi/kesehatan",
-    anak: [
-      { label: "Kesehatan", href: "/informasi/kesehatan" },
-      { label: "Perawatan Alat", href: "/informasi/perawatan-alat" },
-    ],
-  },
+  /**
+   * Satu halaman langsung, tanpa dropdown. Kesehatan dan Perawatan Alat
+   * ditampilkan berurutan sebagai dua seksi di /informasi. Dipilih karena
+   * situs ini mayoritas dibuka dari HP — di ponsel submenu perlu diketuk dulu
+   * untuk mengembang dan gampang salah pencet, sedangkan halaman langsung
+   * cukup satu ketukan. Dua kategori juga masih muat nyaman dalam satu layar.
+   */
+  { label: "Informasi", href: "/informasi" },
   { label: "Agenda", href: "/agenda" },
   { label: "Galeri", href: "/galeri" },
 ];

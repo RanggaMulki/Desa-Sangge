@@ -1,75 +1,109 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
+import { Save } from "lucide-react";
+import { EditorArtikel } from "@/features/artikel/components/EditorArtikel";
 import { simpanVisiMisi, type HasilSimpan } from "../actions";
 
 /**
- * Form visi & misi.
- *
- * Visi satu kotak pendek; misi satu kotak besar dengan aturan sederhana:
- * satu baris = satu butir. Ini sengaja dipilih ketimbang deretan tombol
- * tambah/hapus baris — bagi pengurus desa, mengetik daftar di satu kotak jauh
- * lebih intuitif.
+ * Editor Visi dan Misi memakai pola yang sama dengan editor artikel, sehingga
+ * pengurus dapat menebalkan, memiringkan, membuat daftar, tautan, kutipan,
+ * judul bagian, dan menyisipkan gambar tanpa menulis HTML sendiri.
  */
 export function FormVisiMisi({
   visi,
-  misi,
+  misiHtml,
 }: {
   visi: string;
-  misi: string[];
+  misiHtml: string;
 }) {
+  const [visiHtml, setVisiHtml] = useState(visi || "<p></p>");
+  const [isiMisi, setIsiMisi] = useState(
+    misiHtml || "<ol><li><p></p></li></ol>",
+  );
   const [hasil, aksi, sedang] = useActionState<HasilSimpan | null, FormData>(
     simpanVisiMisi,
     null,
   );
 
   return (
-    <form action={aksi} className="max-w-2xl space-y-6">
-      <div>
-        <label htmlFor="visi" className="font-medium">
-          Visi
-        </label>
-        <p className="mb-1.5 text-sm text-tinta-redup">
-          Satu kalimat pernyataan visi desa.
-        </p>
-        <textarea
-          id="visi"
-          name="visi"
-          rows={3}
-          defaultValue={visi}
-          className="w-full rounded-lg border border-garis bg-white px-3 py-2.5 focus:border-hijau-utama focus:outline-none focus:ring-2 focus:ring-hijau-muda"
-        />
-      </div>
+    <form action={aksi} className="max-w-5xl space-y-6">
+      <input type="hidden" name="visi" value={visiHtml} />
+      <input type="hidden" name="misi" value={isiMisi} />
 
-      <div>
-        <label htmlFor="misi" className="font-medium">
-          Misi
-        </label>
-        <p className="mb-1.5 text-sm text-tinta-redup">
-          Tulis <strong>satu misi per baris</strong>. Tekan Enter untuk butir
-          berikutnya.
-        </p>
-        <textarea
-          id="misi"
-          name="misi"
-          rows={8}
-          defaultValue={misi.join("\n")}
-          className="w-full rounded-lg border border-garis bg-white px-3 py-2.5 leading-relaxed focus:border-hijau-utama focus:outline-none focus:ring-2 focus:ring-hijau-muda"
-        />
-      </div>
+      <section
+        aria-labelledby="judul-editor-visi"
+        className="rounded-lg border border-garis bg-white p-5 shadow-sm sm:p-6"
+      >
+        <div className="border-b border-garis pb-4">
+          <h2
+            id="judul-editor-visi"
+            className="text-xl font-extrabold text-hijau-utama"
+          >
+            Visi Desa
+          </h2>
+          <p className="mt-1 max-w-3xl text-sm leading-relaxed text-tinta-redup">
+            Tuliskan pernyataan visi utama. Teksnya akan tampil miring dan
+            tidak tebal secara bawaan di halaman Profil.
+          </p>
+        </div>
+        <div className="mt-5">
+          <EditorArtikel
+            id="editor-visi-desa"
+            labelAksesibel="Pernyataan Visi Desa"
+            nilai={visiHtml}
+            onChange={setVisiHtml}
+            tinggi="ringkas"
+            folderMedia="halaman"
+          />
+        </div>
+      </section>
 
-      <div className="flex flex-wrap items-center gap-4 border-t border-garis pt-5">
+      <section
+        aria-labelledby="judul-editor-misi"
+        className="rounded-lg border border-garis bg-white p-5 shadow-sm sm:p-6"
+      >
+        <div className="border-b border-garis pb-4">
+          <h2
+            id="judul-editor-misi"
+            className="text-xl font-extrabold text-hijau-utama"
+          >
+            Misi Desa
+          </h2>
+          <p className="mt-1 max-w-3xl text-sm leading-relaxed text-tinta-redup">
+            Gunakan daftar bernomor untuk setiap butir misi. Tekan Enter untuk
+            membuat butir berikutnya, lalu pilih teks jika ingin memformatnya.
+          </p>
+        </div>
+        <div className="mt-5">
+          <EditorArtikel
+            id="editor-misi-desa"
+            labelAksesibel="Daftar Misi Desa"
+            nilai={isiMisi}
+            onChange={setIsiMisi}
+            tinggi="sedang"
+            folderMedia="halaman"
+          />
+        </div>
+      </section>
+
+      <div className="flex flex-wrap items-center gap-4">
         <button
           type="submit"
           disabled={sedang}
-          className="rounded-lg bg-hijau-utama px-6 py-2.5 font-semibold text-white hover:opacity-90 disabled:opacity-60"
+          className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-hijau-utama px-6 py-2.5 font-semibold text-white hover:bg-hijau-pekat disabled:opacity-60"
         >
-          {sedang ? "Menyimpan…" : "Simpan perubahan"}
+          <Save size={18} aria-hidden="true" />
+          {sedang ? "Menyimpan…" : "Simpan visi dan misi"}
         </button>
         {hasil && (
           <p
             role="status"
-            className={hasil.ok ? "font-medium text-hijau-utama" : "font-medium text-merah-layanan"}
+            className={
+              hasil.ok
+                ? "font-medium text-hijau-utama"
+                : "font-medium text-merah-layanan"
+            }
           >
             {hasil.pesan}
           </p>

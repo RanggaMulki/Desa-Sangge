@@ -12,10 +12,7 @@ import { KotakKosong } from "@/features/tata-letak/components/KotakKosong";
 export function ProdukUmkm() {
   return (
     <Seksi latar="permukaan">
-      <JudulSeksi
-        judul="Beli dari Desa"
-        keterangan="Etalase produk UMKM warga Desa Sangge untuk mendukung ekonomi desa."
-      />
+      <JudulSeksi judul="Beli dari Desa" />
       <KotakKosong
         judul="Produk UMKM segera hadir"
         pesan="Produk-produk buatan warga Desa Sangge akan ditampilkan di sini setelah didaftarkan lewat pengelolaan website."

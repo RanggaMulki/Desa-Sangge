@@ -3,22 +3,21 @@
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { halamanStatis, media, misi, pengaturan } from "@/db/schema";
+import { halamanStatis, media, pengaturan } from "@/db/schema";
 import { bersihkanHtml } from "@/lib/sanitasi";
 import { KUNCI_FOTO_SAMBUTAN, SLUG_HALAMAN } from "./halaman";
 import { gabungkanNaskahSejarah } from "./naskah-sejarah";
+import { punyaIsiHtml } from "./visi-misi-html";
 import { pastikanPengurus } from "@/features/auth/queries";
 import { hapusMedia, unggahMedia } from "@/features/media/actions";
 
 export type HasilSimpan = { ok: boolean; pesan: string };
 
 /**
- * Menyimpan visi (satu pernyataan) dan misi (satu baris = satu butir).
+ * Menyimpan dokumen HTML Visi dan Misi dari editor teks kaya.
  *
- * Misi ditulis di satu kotak, satu butir per baris — cara paling ringan bagi
- * pengurus desa, tanpa tombol tambah/hapus baris yang membingungkan. Saat
- * disimpan, seluruh butir misi lama diganti dengan daftar baru; misi tidak
- * dirujuk tabel lain sehingga aman menghapus dan menulis ulang.
+ * Keduanya dibersihkan sebelum masuk database. Nilai kosong dari Tiptap dapat
+ * berbentuk <p></p>, sehingga perlu dinormalkan menjadi string kosong.
  */
 export async function simpanVisiMisi(
   _sebelumnya: HasilSimpan | null,
@@ -26,15 +25,13 @@ export async function simpanVisiMisi(
 ): Promise<HasilSimpan> {
   await pastikanPengurus();
   try {
-    const visi = ((formData.get("visi") as string) ?? "").trim();
-    const butir = ((formData.get("misi") as string) ?? "")
-      .split("\n")
-      .map((b) => b.trim())
-      .filter((b) => b.length > 0);
+    const visiMentah = ((formData.get("visi") as string) ?? "").trim();
+    const misiMentah = ((formData.get("misi") as string) ?? "").trim();
+    const visiAman = bersihkanHtml(visiMentah);
+    const misiAman = bersihkanHtml(misiMentah);
+    const visi = punyaIsiHtml(visiAman) ? visiAman : "";
+    const isiMisi = punyaIsiHtml(misiAman) ? misiAman : "";
 
-    // Visi: satu baris, ditulis sebagai upsert. Slug "visi" unik, jadi tak
-    // perlu cek-dulu-baru-tulis (yang rawan: dua penyimpanan bersamaan bisa
-    // sama-sama melihat "belum ada" lalu dua-duanya insert → bentrok unik).
     const tulisVisi = db
       .insert(halamanStatis)
       .values({ slug: SLUG_HALAMAN.visi, judul: "Visi Desa", konten: visi })
@@ -43,23 +40,23 @@ export async function simpanVisiMisi(
         set: { konten: visi, diperbaruiPada: new Date() },
       });
 
-    // Misi: ganti seluruh daftar. Hapus + tulis dibungkus batch bersama upsert
-    // visi supaya SEMUANYA satu transaksi — kalau gagal di tengah, daftar misi
-    // lama tidak akan hilang tanpa pengganti (neon-http tak punya transaksi
-    // biasa; db.batch yang menyediakannya).
-    if (butir.length > 0) {
-      await db.batch([
-        tulisVisi,
-        db.delete(misi),
-        db.insert(misi).values(
-          butir.map((teks, i) => ({ teks, urutan: i + 1 })),
-        ),
-      ]);
-    } else {
-      await db.batch([tulisVisi, db.delete(misi)]);
-    }
+    const tulisMisi = db
+      .insert(halamanStatis)
+      .values({
+        slug: SLUG_HALAMAN.misi,
+        judul: "Misi Desa",
+        konten: isiMisi,
+      })
+      .onConflictDoUpdate({
+        target: halamanStatis.slug,
+        set: { konten: isiMisi, diperbaruiPada: new Date() },
+      });
+
+    // Batch memastikan Visi dan Misi selalu tersimpan sebagai satu perubahan.
+    await db.batch([tulisVisi, tulisMisi]);
 
     revalidatePath("/profil");
+    revalidatePath("/admin/visi-misi");
     return { ok: true, pesan: "Visi & misi tersimpan." };
   } catch (e) {
     console.error("Gagal menyimpan visi & misi:", e);

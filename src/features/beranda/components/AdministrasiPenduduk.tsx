@@ -35,9 +35,6 @@ export async function AdministrasiPenduduk() {
           <h2 className="judul-seksi-beranda text-balance text-white">
             Desa Sangge <span className="text-hijau-muda">dalam Angka</span>
           </h2>
-          <p className="mt-3 max-w-[65ch] leading-relaxed text-white/80">
-            Data ringkasan resmi kependudukan dan wilayah Desa Sangge.
-          </p>
         </div>
 
         {/* --- Grid 4 kartu ---------------------------------------------- */}

@@ -9,11 +9,16 @@ const FORMAT_PERSEN = new Intl.NumberFormat("id-ID", {
 export function TabelData({
   butir,
   satuan = "jiwa",
+  totalAcuan,
+  labelTotal = "Total",
 }: {
   butir: Butir[];
   satuan?: string;
+  totalAcuan?: number;
+  labelTotal?: string;
 }) {
-  const total = butir.reduce((jumlah, item) => jumlah + item.nilai, 0);
+  const jumlahButir = butir.reduce((jumlah, item) => jumlah + item.nilai, 0);
+  const total = totalAcuan ?? jumlahButir;
 
   return (
     <table className="w-full table-fixed border-collapse text-left text-xs sm:text-sm">
@@ -55,7 +60,7 @@ export function TabelData({
       </tbody>
       <tfoot>
         <tr className="font-bold text-tinta">
-          <th className="pt-3 pr-3">Total</th>
+          <th className="pt-3 pr-3">{labelTotal}</th>
           <td className="px-2 pt-3 text-right tabular-nums">
             {angka(total)}
             <span className="sr-only"> {satuan}</span>

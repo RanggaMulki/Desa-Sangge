@@ -28,7 +28,7 @@ export async function HalamanArtikel({
   kategoriSah,
 }: {
   slug: string;
-  /** Awalan alamat artikel serupa, mis. "/berita". */
+  /** Tujuan tombol "kembali", mis. "/informasi#kesehatan". */
   basis: string;
   /**
    * Kategori yang boleh tampil di alamat ini.
@@ -60,7 +60,7 @@ export async function HalamanArtikel({
           <p className="text-tinta-redup">
             <Link
               href={basis}
-              className="hover:text-hijau-utama hover:underline"
+              className="tautan-garis hover:text-hijau-utama"
             >
               Poster {kategori?.label}
             </Link>
@@ -70,7 +70,7 @@ export async function HalamanArtikel({
           <h1 className="mt-2 text-3xl font-bold sm:text-4xl">
             {artikel.judul}
           </h1>
-          <div className="relative mt-8 aspect-[3/4] overflow-hidden rounded-lg border border-garis bg-white">
+          <div className="masuk-halus relative mt-8 aspect-[3/4] overflow-hidden rounded-lg border border-garis bg-white">
             <Image
               src={artikel.gambarSampulUrl}
               alt={artikel.judul}
@@ -96,7 +96,7 @@ export async function HalamanArtikel({
           <p className="text-tinta-redup">
             <Link
               href={basis}
-              className="hover:text-hijau-utama hover:underline"
+              className="tautan-garis hover:text-hijau-utama"
             >
               {kategori?.label}
             </Link>
@@ -143,7 +143,10 @@ export async function HalamanArtikel({
               <ul className="mt-4 space-y-4 border-t border-garis pt-4">
                 {serupa.map((s) => (
                   <li key={s.id}>
-                    <Link href={`${basis}/${s.slug}`} className="group block">
+                    <Link
+                      href={`/informasi/${artikel.kategori}/${s.slug}`}
+                      className="group block"
+                    >
                       <span className="block font-medium group-hover:underline">
                         {s.judul}
                       </span>

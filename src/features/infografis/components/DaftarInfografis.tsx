@@ -1,8 +1,6 @@
 import { KotakKosong } from "@/features/tata-letak/components/KotakKosong";
 import { ambilInfografis } from "../queries";
-import { GrafikKolom } from "./GrafikKolom";
-import { GrafikPai } from "./GrafikPai";
-import { GrafikPiramida } from "./GrafikPiramida";
+import { GrafikKolom, GrafikPai, GrafikPiramida } from "./GrafikLazy";
 import { PanelGrafik } from "./PanelGrafik";
 import type { Butir } from "../kategori";
 

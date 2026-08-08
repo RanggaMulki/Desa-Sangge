@@ -25,7 +25,10 @@ export default function StrukturPemerintahan() {
       <KepalaHalaman judul="Struktur Organisasi dan Tata Kerja Pemerintah Desa Sangge" />
 
       <section aria-labelledby="judul-bagan">
-        <h2 id="judul-bagan" className="mb-6 text-left text-2xl font-bold">
+        <h2
+          id="judul-bagan"
+          className="judul-seksi-beranda mb-6 text-balance text-left text-hijau-pekat"
+        >
           Bagan Organisasi
         </h2>
         {/* Bagan pohon dulu, lalu wajah perangkatnya langsung di bawahnya —

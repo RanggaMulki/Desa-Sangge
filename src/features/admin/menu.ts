@@ -35,8 +35,6 @@ export const MENU_ADMIN: KelompokMenuAdmin[] = [
       { label: "Sambutan Kepala Desa", href: "/admin/sambutan", ikon: "obrolan", siap: true },
       { label: "Video Profil", href: "/admin/video-profil", ikon: "video", siap: true },
       { label: "Bagan & Perangkat", href: "/admin/perangkat", ikon: "orang", siap: true },
-      { label: "Batas Wilayah", href: "/admin/batas", ikon: "peta", siap: true },
-      { label: "Peta Lokasi", href: "/admin/peta", ikon: "peta", siap: true },
       { label: "Angka Desa", href: "/admin/statistik", ikon: "grafik", siap: true },
       { label: "Infografis", href: "/admin/infografis", ikon: "grafik", siap: true },
     ],

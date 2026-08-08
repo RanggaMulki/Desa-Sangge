@@ -24,7 +24,6 @@ export async function VideoProfil() {
       <JudulSeksi
         judul="Video Profil"
         aksen="Desa Sangge"
-        keterangan="Mengenal Desa Sangge lebih dekat melalui tayangan profil desa."
       />
 
       <ScrollReveal>

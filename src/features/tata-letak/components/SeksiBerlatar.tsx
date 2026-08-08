@@ -45,7 +45,7 @@ export function SeksiBerlatar({
       <div className="mx-auto max-w-7xl px-5 py-16 sm:py-20 lg:px-8">
         <h2
           id={`judul-${id}`}
-          className="max-w-4xl text-balance text-left text-3xl font-bold text-hijau-utama sm:text-4xl"
+          className="judul-seksi-beranda max-w-4xl text-balance text-left text-hijau-pekat"
         >
           {judul}
         </h2>

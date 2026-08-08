@@ -10,11 +10,10 @@ import {
   SUMBER_INPUT_ADMIN,
 } from "./penduduk";
 import {
-  KATEGORI_STUNTING,
-  KUNCI_KATEGORI_STUNTING,
-  KUNCI_PENGATURAN_STUNTING,
-  SUMBER_STUNTING_DEFAULT,
-  type KategoriStunting,
+  ISIAN_STUNTING,
+  KUNCI_DATA_STUNTING,
+  validasiRingkasanStunting,
+  type RingkasanStunting,
 } from "./stunting";
 import { pastikanPengurus } from "@/features/auth/queries";
 
@@ -244,83 +243,54 @@ export async function simpanInfografis(
   }
 }
 
-/**
- * Menyimpan seluruh angka Risiko Stunting dari form.
- *
- * Lebih longgar daripada penduduk: indikator stunting (TB/U, BB/U, dusun, dst.)
- * TIDAK harus berjumlah sama, karena tidak semua balita terukur untuk semua
- * indikator. Yang diperiksa hanya tiap angka berupa bilangan bulat ≥ 0, dan
- * minimal satu angka terisi. Golongan bernilai 0 tidak disimpan barisnya.
- *
- * Hanya baris berkategori stunting yang dihapus-tulis ulang; data kependudukan
- * di tabel yang sama tidak tersentuh.
- */
+/** Menyimpan rekap ibu hamil dan balita tanpa menyentuh data rinci lama. */
 export async function simpanStunting(
   _sebelumnya: HasilSimpan | null,
   formData: FormData,
 ): Promise<HasilSimpan> {
   await pastikanPengurus();
   const periode = String(formData.get("periode") ?? "").trim();
-  const sumberNama =
-    String(formData.get("sumber-nama") ?? "").trim() ||
-    SUMBER_STUNTING_DEFAULT.nama;
-  const sumberUrl = String(formData.get("sumber-url") ?? "").trim();
 
   if (periode === "") {
     return {
       ok: false,
-      pesan: "Periode data belum diisi. Contoh: Bulan Timbang Agustus 2026.",
-    };
-  }
-  if (sumberUrl !== "" && !/^https?:\/\//i.test(sumberUrl)) {
-    return {
-      ok: false,
-      pesan:
-        "Tautan sumber harus diawali http:// atau https://, atau dikosongkan saja.",
+      pesan: "Periode data belum diisi. Contoh: Juni 2026.",
     };
   }
 
-  const semua: {
-    kategori: KategoriStunting;
-    label: string;
-    nilai: number;
-    urutan: number;
-  }[] = [];
-  for (const k of KATEGORI_STUNTING) {
-    for (const [i, label] of k.variabel.entries()) {
-      const hasil = bacaBilanganBulat(
-        formData.get(`n-${k.kunci}-${i}`),
-        `Angka "${label}" pada ${k.judul}`,
-      );
-      if (typeof hasil === "string") return { ok: false, pesan: hasil };
-      semua.push({ kategori: k.kunci, label, nilai: hasil, urutan: i + 1 });
-    }
+  const angkaStunting = {} as Record<
+    Exclude<keyof RingkasanStunting, "periode">,
+    number
+  >;
+  for (const isian of ISIAN_STUNTING) {
+    const hasil = bacaBilanganBulat(
+      formData.get(isian.nama),
+      isian.label,
+    );
+    if (typeof hasil === "string") return { ok: false, pesan: hasil };
+    angkaStunting[isian.kunci] = hasil;
   }
 
-  const barisSimpan = semua.filter((item) => item.nilai > 0);
-  if (barisSimpan.length === 0) {
-    return {
-      ok: false,
-      pesan: "Semua angka masih 0. Isi minimal satu angka sebelum menyimpan.",
-    };
-  }
+  const ringkasan: RingkasanStunting = { periode, ...angkaStunting };
+  const pesanValidasi = validasiRingkasanStunting(ringkasan);
+  if (pesanValidasi) return { ok: false, pesan: pesanValidasi };
+
+  const nilaiSimpan = [
+    { kunci: KUNCI_DATA_STUNTING.periode, nilai: ringkasan.periode },
+    ...ISIAN_STUNTING.map((isian) => ({
+      kunci: KUNCI_DATA_STUNTING[isian.kunci],
+      nilai: String(ringkasan[isian.kunci]),
+    })),
+  ];
 
   try {
     await db.batch([
       db
-        .delete(infografis)
-        .where(inArray(infografis.kategori, KUNCI_KATEGORI_STUNTING)),
-      db.insert(infografis).values(barisSimpan),
-      db
         .delete(pengaturan)
         .where(
-          inArray(pengaturan.kunci, Object.values(KUNCI_PENGATURAN_STUNTING)),
+          inArray(pengaturan.kunci, Object.values(KUNCI_DATA_STUNTING)),
         ),
-      db.insert(pengaturan).values([
-        { kunci: KUNCI_PENGATURAN_STUNTING.periode, nilai: periode },
-        { kunci: KUNCI_PENGATURAN_STUNTING.sumberNama, nilai: sumberNama },
-        { kunci: KUNCI_PENGATURAN_STUNTING.sumberUrl, nilai: sumberUrl },
-      ]),
+      db.insert(pengaturan).values(nilaiSimpan),
     ]);
 
     revalidatePath("/infografis/stunting");

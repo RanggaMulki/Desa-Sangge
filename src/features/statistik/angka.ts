@@ -66,6 +66,18 @@ export const ANGKA_DESA: {
     satuan: "dusun",
     petunjuk: "Banyaknya dusun di desa.",
   },
+  {
+    kunci: "dukuh",
+    label: "Jumlah Dukuh",
+    satuan: "dukuh",
+    petunjuk: "Banyaknya dukuh (dusun kecil) di desa.",
+  },
+  {
+    kunci: "rt",
+    label: "Jumlah RT",
+    satuan: "RT",
+    petunjuk: "Banyaknya Rukun Tetangga (RT). Isi jumlahnya, bukan nomornya.",
+  },
 ];
 
 /** Semua kunci yang sah. Baris di luar daftar ini dianggap sisa data lama. */

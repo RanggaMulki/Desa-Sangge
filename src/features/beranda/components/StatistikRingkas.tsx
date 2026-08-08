@@ -17,7 +17,7 @@ export async function StatistikRingkas() {
         judul="Desa Sangge dalam Angka"
         // Angka diisi manual dan tidak berubah sendiri, jadi tahunnya harus
         // terlihat supaya pembaca tahu kapan data ini berlaku.
-        keterangan={`Data tahun ${tahun}.`}
+        aksen={String(tahun)}
       />
       <KisiStatistik />
     </Seksi>

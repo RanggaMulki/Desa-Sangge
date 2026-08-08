@@ -79,7 +79,6 @@ export default function ProfilDesa() {
       <SeksiBerlatar
         id="sejarah"
         judul="Sejarah dan Legenda Desa"
-        keterangan="Riwayat Sendang Sangge dan cerita yang diwariskan masyarakat."
         latar="permukaan"
       >
         <SejarahDesa />
@@ -89,7 +88,6 @@ export default function ProfilDesa() {
         id="peta"
         judul="Peta Lokasi Desa"
         lebar="lebar"
-        keterangan="Letak dan batas wilayah Desa Sangge, Kecamatan Klego, Kabupaten Boyolali."
         latar="terang"
       >
         <PetaLokasi />

@@ -1,12 +1,13 @@
 import { KotakKosong } from "@/features/tata-letak/components/KotakKosong";
+import { KontenAman } from "@/features/tata-letak/components/KontenAman";
 import { SeksiBerlatar } from "@/features/tata-letak/components/SeksiBerlatar";
 import { ambilVisiMisi } from "../queries";
 
 /**
  * Bagian Visi & Misi di halaman Profil.
  *
- * Visi dan misi ditampilkan polos dalam satu kolom yang berada di tengah.
- * Setiap butir misi memakai satu baris bernomor agar urutannya mudah dipindai.
+ * Visi dan Misi ditumpuk vertikal dalam satu kolom. Lebarnya dibatasi agar
+ * baris teks tetap nyaman dibaca, sementara tinggi tiap blok mengikuti isi.
  */
 export async function VisiMisi() {
   const { visi, misi } = await ambilVisiMisi();
@@ -15,7 +16,6 @@ export async function VisiMisi() {
     <SeksiBerlatar
       id="visi-misi"
       judul="Visi dan Misi Desa Sangge"
-      keterangan="Arah pembangunan desa yang menjadi landasan pelayanan pemerintah dan pemberdayaan masyarakat."
       latar="hijau"
     >
       {!visi && misi.length === 0 ? (
@@ -24,22 +24,22 @@ export async function VisiMisi() {
           pesan="Visi dan misi Desa Sangge akan tampil di sini setelah dimasukkan lewat halaman pengelolaan."
         />
       ) : (
-        <div className="mx-auto max-w-6xl space-y-10 sm:space-y-12">
+        <div className="mx-auto grid max-w-[71.5625rem] grid-cols-1 items-start gap-4 sm:gap-5">
           {visi && (
             <article
               aria-labelledby="judul-visi"
-              className="masuk-halus"
+              className="masuk-halus w-full rounded-lg border border-garis bg-white p-4 sm:p-5"
             >
               <h3
                 id="judul-visi"
-                className="text-center text-3xl font-extrabold text-hijau-pekat sm:text-4xl"
+                className="text-left text-2xl font-extrabold leading-tight text-hijau-pekat"
               >
                 Visi
               </h3>
-              <blockquote className="mx-auto mt-6 w-fit max-w-full">
-                <p className="hyphens-auto whitespace-pre-line text-justify text-lg font-semibold leading-relaxed text-tinta lg:whitespace-nowrap">
-                  {visi}
-                </p>
+              <blockquote className="mt-4 border-t border-garis pt-4 sm:mt-5 sm:pt-5">
+                <div className="hyphens-auto text-left text-lg font-normal italic leading-8 tracking-[-0.01em] text-tinta sm:text-justify sm:text-xl sm:leading-9 [text-align-last:left] [text-wrap:wrap] [&>div>p]:!mb-0">
+                  <KontenAman html={visi} />
+                </div>
               </blockquote>
             </article>
           )}
@@ -47,25 +47,27 @@ export async function VisiMisi() {
           {misi.length > 0 && (
             <section
               aria-labelledby="judul-misi"
-              className="masuk-halus [--jeda-masuk:100ms]"
+              className="masuk-halus w-full rounded-lg border border-garis bg-white p-4 sm:p-5 [--jeda-masuk:100ms]"
             >
               <h3
                 id="judul-misi"
-                className="text-center text-3xl font-extrabold text-hijau-pekat sm:text-4xl"
+                className="text-left text-2xl font-extrabold leading-tight text-hijau-pekat"
               >
                 Misi
               </h3>
 
-              <ol className="mt-5 space-y-2 text-lg font-medium leading-normal text-tinta sm:text-xl">
+              <ol className="mt-4 list-none divide-y divide-garis border-t border-garis pt-1 font-normal leading-8 text-tinta sm:mt-5 sm:text-lg">
                 {misi.map((item, index) => (
                   <li
                     key={item.id}
-                    className="grid grid-cols-[1.75rem_minmax(0,1fr)] items-start gap-2 sm:grid-cols-[2rem_minmax(0,1fr)] sm:gap-3"
+                    className="grid grid-cols-[2rem_minmax(0,1fr)] items-start gap-3 py-3.5 first:pt-3 last:pb-0 sm:grid-cols-[2.25rem_minmax(0,1fr)] sm:gap-4 sm:py-4"
                   >
-                    <span className="font-extrabold text-hijau-pekat">
-                      {index + 1}.
+                    <span className="flex size-8 items-center justify-center rounded-full bg-hijau-utama text-sm font-extrabold tabular-nums text-white sm:size-9 sm:text-base">
+                      {index + 1}
                     </span>
-                    <span className="hyphens-auto text-justify">{item.teks}</span>
+                    <div className="min-w-0 hyphens-auto text-left font-normal tracking-[-0.01em] sm:text-justify [text-align-last:left] [&>div>p]:!mb-0">
+                      <KontenAman html={item.teks} />
+                    </div>
                   </li>
                 ))}
               </ol>

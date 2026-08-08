@@ -16,6 +16,15 @@ import {
 } from "lucide-react";
 import { unggahMedia } from "@/features/media/actions";
 import { siapkanGambarUntukUnggah } from "@/features/media/gambar-klien";
+import type { FolderMedia } from "@/features/media/validasi";
+
+type TinggiEditor = "ringkas" | "sedang" | "panjang";
+
+const KELAS_TINGGI_EDITOR: Record<TinggiEditor, string> = {
+  ringkas: "min-h-32 px-4 py-4 sm:min-h-36 sm:px-5",
+  sedang: "min-h-56 px-4 py-4 sm:min-h-64 sm:px-5",
+  panjang: "min-h-72 px-4 py-4 sm:min-h-80 sm:px-5",
+};
 
 type TombolEditorProps = {
   label: string;
@@ -58,6 +67,8 @@ export function EditorArtikel({
   pesanError,
   id = "isi-artikel-editor",
   labelAksesibel = "Isi artikel",
+  tinggi = "panjang",
+  folderMedia = "artikel",
 }: {
   nilai: string;
   onChange: (html: string) => void;
@@ -65,6 +76,8 @@ export function EditorArtikel({
   pesanError?: string;
   id?: string;
   labelAksesibel?: string;
+  tinggi?: TinggiEditor;
+  folderMedia?: FolderMedia;
 }) {
   const inputGambar = useRef<HTMLInputElement>(null);
   const [sedangUnggah, setSedangUnggah] = useState(false);
@@ -92,8 +105,7 @@ export function EditorArtikel({
         id,
         role: "textbox",
         "aria-multiline": "true",
-        class:
-          "min-h-72 px-4 py-4 focus:outline-none sm:min-h-80 sm:px-5",
+        class: `${KELAS_TINGGI_EDITOR[tinggi]} focus:outline-none`,
         "aria-label": labelAksesibel,
       },
     },
@@ -132,7 +144,7 @@ export function EditorArtikel({
         batasMb: 0.45,
         sisiMaksimal: 1600,
       });
-      const hasil = await unggahMedia(kecil, "artikel");
+      const hasil = await unggahMedia(kecil, folderMedia);
       if (!hasil.ok) {
         setPesanUnggah(hasil.pesan);
         return;
@@ -142,7 +154,7 @@ export function EditorArtikel({
         .focus()
         .setImage({ src: hasil.url, alt: berkas.name })
         .run();
-      setPesanUnggah("Gambar berhasil dimasukkan ke isi artikel.");
+      setPesanUnggah("Gambar berhasil dimasukkan ke dalam teks.");
     } catch {
       setPesanUnggah(
         "Gambar gagal diproses. Coba pilih foto berformat JPG atau PNG.",

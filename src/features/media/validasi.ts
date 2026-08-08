@@ -38,13 +38,15 @@ export type FolderMedia =
   | "artikel"
   | "perangkat"
   | "lampiran"
-  | "sambutan";
+  | "sambutan"
+  | "halaman";
 export const FOLDER_MEDIA: FolderMedia[] = [
   "galeri",
   "artikel",
   "perangkat",
   "lampiran",
   "sambutan",
+  "halaman",
 ];
 
 export type HasilPeriksa =

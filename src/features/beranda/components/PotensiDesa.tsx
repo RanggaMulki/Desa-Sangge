@@ -38,12 +38,7 @@ export function PotensiDesa() {
               Potensi <span className="text-oker">Pertanian</span>
             </h2>
 
-            <p className="mt-4 max-w-[65ch] text-lg font-semibold leading-relaxed text-hijau-utama">
-              Pertanian menjadi potensi utama sekaligus bagian penting dari
-              penghidupan masyarakat Desa Sangge.
-            </p>
-
-            <div className="mt-6 max-w-[65ch] space-y-4 leading-relaxed text-tinta-redup">
+            <div className="mt-5 max-w-[65ch] space-y-4 leading-relaxed text-tinta-redup">
               <p>
                 Hamparan sawah dan tegalan dimanfaatkan warga untuk menanam
                 padi serta palawija. Kegiatan pertanian ini menjadi kekuatan

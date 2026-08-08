@@ -15,6 +15,7 @@ export function PanelGrafik({
   anak,
   labelJumlah = "Total",
   satuan = "jiwa",
+  totalAcuan,
 }: {
   id: string;
   judul: string;
@@ -23,8 +24,10 @@ export function PanelGrafik({
   anak: ReactNode;
   labelJumlah?: string;
   satuan?: string;
+  totalAcuan?: number;
 }) {
-  const total = butir.reduce((nilai, item) => nilai + item.nilai, 0);
+  const jumlahButir = butir.reduce((nilai, item) => nilai + item.nilai, 0);
+  const total = totalAcuan ?? jumlahButir;
 
   return (
     <section
