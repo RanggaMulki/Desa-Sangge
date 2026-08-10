@@ -1,7 +1,8 @@
 "use client";
 
 import { Trash2 } from "lucide-react";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
+import { notifSwal } from "@/features/admin/components/notifikasi";
 import { siapkanGambarUntukUnggah } from "@/features/media/gambar-klien";
 import { konfirmasi } from "@/lib/alert";
 import { hapusFotoPerangkat, simpanFotoPerangkat } from "../actions";
@@ -27,6 +28,11 @@ export function UnggahFoto({
 }) {
   const [foto, setFoto] = useState<string | null>(fotoAwal);
   const [pesan, setPesan] = useState<{ ok: boolean; teks: string } | null>(null);
+
+  // Toast SweetAlert2 saat foto tersimpan/gagal.
+  useEffect(() => {
+    if (pesan) notifSwal(pesan.ok, pesan.teks);
+  }, [pesan]);
   const [sedang, mulai] = useTransition();
 
   async function saatPilih(e: React.ChangeEvent<HTMLInputElement>) {

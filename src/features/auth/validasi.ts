@@ -18,6 +18,19 @@ export const skemaMasuk = z.object({
 
 export type DataMasuk = z.infer<typeof skemaMasuk>;
 
+export const skemaTambahAkun = z.object({
+  nama: z.string().trim().min(1, "Nama lengkap belum diisi."),
+  namaPengguna: z
+    .string()
+    .trim()
+    .min(3, "Nama pengguna minimal 3 huruf.")
+    .regex(
+      /^[a-zA-Z0-9._-]+$/,
+      "Nama pengguna hanya boleh huruf, angka, titik, garis, atau titik dua.",
+    ),
+  kataSandi: z.string().min(8, "Kata sandi minimal 8 huruf atau angka."),
+});
+
 export const skemaGantiKataSandi = z
   .object({
     kataSandiLama: z.string().min(1, "Kata sandi lama belum diisi."),

@@ -1,10 +1,7 @@
 import { Seksi } from "@/features/tata-letak/components/Seksi";
 import { KontenAman } from "@/features/tata-letak/components/KontenAman";
 import { ambilPengisiStruktur } from "@/features/pemerintahan/queries";
-import {
-  ambilFotoSambutan,
-  ambilHalaman,
-} from "@/features/halaman-statis/queries";
+import { ambilHalaman } from "@/features/halaman-statis/queries";
 import { ScrollReveal } from "./ScrollReveal";
 
 /**
@@ -21,15 +18,14 @@ import { ScrollReveal } from "./ScrollReveal";
  * menampilkan sambutan karangan.
  */
 export async function SambutanKepalaDesa() {
-  const [pengisi, halaman, fotoSambutan] = await Promise.all([
+  const [pengisi, halaman] = await Promise.all([
     ambilPengisiStruktur(),
     ambilHalaman("sambutan"),
-    ambilFotoSambutan(),
   ]);
   const kades = pengisi.get("kepala-desa");
   const naskah = halaman?.konten?.trim() ?? "";
-  // Foto khusus sambutan kalau diunggah, kalau tidak foto Kepala Desa.
-  const fotoUrl = fotoSambutan ?? kades?.fotoUrl ?? null;
+  // Foto Kepala Desa dari data Perangkat (Bagan & Perangkat).
+  const fotoUrl = kades?.fotoUrl ?? null;
 
   // Tanpa sosok Kepala Desa tidak ada yang bisa ditampilkan.
   if (!kades?.nama) return null;

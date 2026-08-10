@@ -59,18 +59,21 @@ export async function SejarahDesa() {
 
   const bagian = pisahkanNaskahSejarah(halaman.konten);
 
-  return (
-    <div className="grid items-start gap-5 sm:gap-6 lg:grid-cols-2 lg:gap-8">
-      <KotakCeritaDesa
-        id="subjudul-sejarah-desa"
-        judul="Sejarah Desa"
-        html={bagian.sejarah}
-      />
-      <KotakCeritaDesa
-        id="subjudul-legenda-desa"
-        judul="Legenda Desa"
-        html={bagian.legenda}
-      />
-    </div>
-  );
+    // Ditumpuk atas-bawah (bukan dua kolom), dan tiap kartu memanjang penuh
+    // selebar seksi supaya terasa lapang. Naskahnya tetap rata kanan-kiri
+    // (justify) dengan hyphens-auto agar rapi meski barisnya panjang.
+    return (
+      <div className="grid items-start gap-5 sm:gap-6">
+        <KotakCeritaDesa
+          id="subjudul-sejarah-desa"
+          judul="Sejarah Desa"
+          html={bagian.sejarah}
+        />
+        <KotakCeritaDesa
+          id="subjudul-legenda-desa"
+          judul="Legenda Desa"
+          html={bagian.legenda}
+        />
+      </div>
+    );
 }

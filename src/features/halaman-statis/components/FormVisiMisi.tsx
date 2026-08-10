@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { Save } from "lucide-react";
 import { EditorArtikel } from "@/features/artikel/components/EditorArtikel";
 import { simpanVisiMisi, type HasilSimpan } from "../actions";
+import { useNotifHasil } from "@/features/admin/components/notifikasi";
 
 /**
  * Editor Visi dan Misi memakai pola yang sama dengan editor artikel, sehingga
@@ -25,6 +26,7 @@ export function FormVisiMisi({
     simpanVisiMisi,
     null,
   );
+  useNotifHasil(hasil);
 
   return (
     <form action={aksi} className="max-w-5xl space-y-6">
@@ -42,10 +44,6 @@ export function FormVisiMisi({
           >
             Visi Desa
           </h2>
-          <p className="mt-1 max-w-3xl text-sm leading-relaxed text-tinta-redup">
-            Tuliskan pernyataan visi utama. Teksnya akan tampil miring dan
-            tidak tebal secara bawaan di halaman Profil.
-          </p>
         </div>
         <div className="mt-5">
           <EditorArtikel
@@ -70,10 +68,6 @@ export function FormVisiMisi({
           >
             Misi Desa
           </h2>
-          <p className="mt-1 max-w-3xl text-sm leading-relaxed text-tinta-redup">
-            Gunakan daftar bernomor untuk setiap butir misi. Tekan Enter untuk
-            membuat butir berikutnya, lalu pilih teks jika ingin memformatnya.
-          </p>
         </div>
         <div className="mt-5">
           <EditorArtikel

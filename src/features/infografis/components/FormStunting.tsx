@@ -2,7 +2,15 @@
 
 import { useActionState } from "react";
 import { simpanStunting, type HasilSimpan } from "../actions";
+import { useNotifHasil } from "@/features/admin/components/notifikasi";
 import type { RingkasanStunting } from "../stunting";
+
+/** Gaya seragam untuk kotak angka: besar, rata kanan, tanpa panah spinner. */
+const KELAS_ANGKA =
+  "min-h-11 w-full rounded-lg border border-garis bg-white px-3 py-2.5 text-right text-base tabular-nums outline-none [appearance:textfield] focus:border-hijau-utama focus:ring-2 focus:ring-hijau-muda [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none";
+
+const KELAS_TEKS =
+  "min-h-11 w-full rounded-lg border border-garis bg-white px-3 py-2.5 text-base outline-none focus:border-hijau-utama focus:ring-2 focus:ring-hijau-muda";
 
 function IsianAngka({
   id,
@@ -19,7 +27,9 @@ function IsianAngka({
 }) {
   return (
     <label htmlFor={id} className="block">
-      <span className="mb-2 block font-semibold text-tinta">{label}</span>
+      <span className="mb-1.5 block text-sm font-semibold text-tinta">
+        {label}
+      </span>
       <input
         id={id}
         name={name}
@@ -29,7 +39,7 @@ function IsianAngka({
         step={1}
         required
         defaultValue={nilai}
-        className="w-full rounded-lg border border-garis bg-white px-3 py-2.5 text-right tabular-nums focus:border-hijau-utama focus:outline-none focus:ring-2 focus:ring-hijau-muda"
+        className={KELAS_ANGKA}
       />
       {keterangan && (
         <span className="mt-1.5 block text-sm leading-relaxed text-tinta-redup">
@@ -49,20 +59,16 @@ export function FormStunting({
     simpanStunting,
     null,
   );
+  useNotifHasil(hasil);
 
   return (
     <form action={aksi} className="space-y-6">
-      <div className="rounded-lg bg-permukaan p-4 leading-relaxed text-tinta-redup">
-        Isi angka agregat tanpa nama atau NIK. Persentase risiko dihitung
-        otomatis dari jumlah pada setiap indikator dan total kelompoknya.
-      </div>
-
       <fieldset className="rounded-xl border border-garis bg-white p-5 sm:p-6">
         <legend className="px-2 text-lg font-bold text-tinta">
           Periode data
         </legend>
         <label className="block max-w-xl">
-          <span className="mb-2 block font-semibold text-tinta">
+          <span className="mb-1.5 block text-sm font-semibold text-tinta">
             Bulan dan tahun
           </span>
           <input
@@ -71,7 +77,7 @@ export function FormStunting({
             required
             defaultValue={ringkasanAwal.periode}
             placeholder="Contoh: Juni 2026"
-            className="w-full rounded-lg border border-garis bg-white px-3 py-2.5 focus:border-hijau-utama focus:outline-none focus:ring-2 focus:ring-hijau-muda"
+            className={KELAS_TEKS}
           />
         </label>
       </fieldset>
@@ -127,19 +133,15 @@ export function FormStunting({
             label="Berat badan kurang"
           />
         </div>
-        <p className="mt-5 text-sm leading-relaxed text-tinta-redup">
-          Ketiga indikator dapat mencakup balita yang sama, sehingga jumlahnya
-          tidak harus dijumlahkan menjadi total balita.
-        </p>
       </fieldset>
 
-      <div className="sticky bottom-0 flex flex-wrap items-center gap-4 border-t border-garis bg-latar py-4">
+      <div className="sticky bottom-0 z-10 -mx-1 flex flex-wrap items-center gap-4 border-t border-garis bg-latar/95 px-1 py-4 backdrop-blur">
         <button
           type="submit"
           disabled={sedang}
-          className="rounded-lg bg-hijau-utama px-6 py-2.5 font-semibold text-white hover:bg-hijau-pekat disabled:opacity-60"
+          className="inline-flex min-h-11 items-center rounded-lg bg-hijau-utama px-6 py-2.5 font-semibold text-white hover:bg-hijau-pekat disabled:opacity-60"
         >
-          {sedang ? "Menyimpan..." : "Simpan data stunting"}
+          {sedang ? "Menyimpan…" : "Simpan data stunting"}
         </button>
         {hasil && (
           <p

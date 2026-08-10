@@ -26,7 +26,7 @@ export async function KerangkaAdmin({
   return (
     <div className="min-h-screen bg-permukaan">
       <header className="border-b border-white/15 [background:var(--gradien-header)] text-white">
-        <div className="mx-auto flex min-h-[var(--tinggi-header)] max-w-[90rem] items-center justify-between gap-4 px-4 sm:px-6">
+        <div className="flex min-h-[var(--tinggi-header)] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <IdentitasAdmin />
           <div className="flex shrink-0 items-center gap-3 sm:gap-4">
             {akun && (
@@ -49,9 +49,11 @@ export async function KerangkaAdmin({
         </div>
       </header>
 
-      {/* Sidebar + isi. Di HP daftar menu dilipat supaya form langsung terlihat. */}
-      <div className="mx-auto flex max-w-[90rem] flex-col gap-6 px-4 py-6 sm:px-6 lg:flex-row lg:py-8">
-        <aside className="shrink-0 lg:w-60">
+      {/* Sidebar + isi selebar layar penuh (tanpa batas 90rem). Di HP daftar
+          menu dilipat supaya form langsung terlihat. Form di tiap halaman punya
+          max-w sendiri, jadi tidak melar berlebihan di layar lebar. */}
+      <div className="flex flex-col gap-6 px-4 py-6 sm:px-6 lg:flex-row lg:py-8 lg:px-8">
+        <aside className="shrink-0 lg:w-72">
           <details className="rounded-lg border border-garis bg-white lg:hidden">
             <summary className="flex min-h-12 cursor-pointer list-none items-center gap-3 px-4 py-3 font-semibold text-hijau-utama">
               <Menu size={21} aria-hidden="true" />
@@ -61,7 +63,7 @@ export async function KerangkaAdmin({
               <SidebarAdmin />
             </div>
           </details>
-          <div className="hidden rounded-lg border border-garis bg-white p-3 lg:sticky lg:top-6 lg:block">
+          <div className="hidden rounded-xl border border-garis bg-white p-4 lg:sticky lg:top-6 lg:block">
             <SidebarAdmin />
           </div>
         </aside>

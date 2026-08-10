@@ -64,9 +64,6 @@ export function FormKontak({ awal }: { awal?: KontakLayanan | null }) {
               </option>
             ))}
           </select>
-          <p className="mt-1 text-sm text-tinta-redup">
-            Jenis menentukan letak kontak di halaman publik.
-          </p>
         </div>
 
         <div>
@@ -99,9 +96,6 @@ export function FormKontak({ awal }: { awal?: KontakLayanan | null }) {
             placeholder="Contoh: 0812-3456-7890"
             className={KELAS_INPUT}
           />
-          <p className="mt-1 text-sm text-tinta-redup">
-            Boleh ditulis dengan strip atau spasi — nanti dirapikan otomatis.
-          </p>
         </div>
 
         <div>

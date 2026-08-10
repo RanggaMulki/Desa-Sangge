@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { JudulPengelolaan } from "@/features/admin/components/SedangDisiapkan";
+import { NotifParamHasil } from "@/features/admin/components/NotifParamHasil";
 import { KelolaKontak } from "@/features/kontak-layanan/components/KelolaKontak";
 
 export const metadata: Metadata = {
@@ -20,16 +21,15 @@ export default async function Kelola({
         judul="Kontak & Layanan"
         keterangan="Nomor yang bisa dihubungi warga, termasuk kontak KPPA. Tampil di footer semua halaman."
       />
-      {(hasil === "tambah" || hasil === "ubah") && (
-        <div
-          role="status"
-          className="mb-5 rounded-lg border border-hijau-utama/30 bg-hijau-muda px-4 py-3 text-sm font-medium text-hijau-utama"
-        >
-          {hasil === "tambah"
+      <NotifParamHasil
+        pesan={
+          hasil === "tambah"
             ? "Kontak baru tersimpan dan langsung tampil di website."
-            : "Perubahan kontak tersimpan."}
-        </div>
-      )}
+            : hasil === "ubah"
+              ? "Perubahan kontak tersimpan."
+              : null
+        }
+      />
       <KelolaKontak idUbah={ubah} />
     </div>
   );

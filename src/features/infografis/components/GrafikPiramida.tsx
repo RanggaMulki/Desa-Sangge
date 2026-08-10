@@ -49,6 +49,71 @@ function TooltipPiramida({ active, payload }: TooltipContentProps) {
   );
 }
 
+/**
+ * Label angka di ujung batang. Recharts v3 tidak lagi merender <LabelList>
+ * sebagai anak <Bar> dengan andal, jadi dipakai prop `label` dengan komponen
+ * render sendiri — sekaligus memberi kendali penuh atas posisi dan format.
+ */
+type PropsLabelBatang = {
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  value?: number | string;
+};
+
+/**
+ * Laki-laki: angka di ujung KIRI batang (di luar batang, terlihat).
+ *
+ * Batang laki-laki bernilai negatif, jadi recharts mengirim `x` di sisi tengah
+ * (garis nol) dan `width` NEGATIF. Ujung luar kiri = `x + width`. Angkanya
+ * ditaruh sedikit di kirinya (textAnchor "end") dan ditampilkan positif.
+ */
+function LabelLaki({
+  x = 0,
+  y = 0,
+  width = 0,
+  height = 0,
+  value = 0,
+}: PropsLabelBatang) {
+  return (
+    <text
+      x={Number(x) + Number(width) - 6}
+      y={Number(y) + Number(height) / 2}
+      textAnchor="end"
+      dominantBaseline="central"
+      fontSize={11}
+      fontWeight={600}
+      fill="var(--color-tinta)"
+    >
+      {angka(Math.abs(Number(value)))}
+    </text>
+  );
+}
+
+/** Perempuan: angka di KANAN batang. */
+function LabelPerempuan({
+  x = 0,
+  y = 0,
+  width = 0,
+  height = 0,
+  value = 0,
+}: PropsLabelBatang) {
+  return (
+    <text
+      x={Number(x) + Number(width) + 6}
+      y={Number(y) + Number(height) / 2}
+      textAnchor="start"
+      dominantBaseline="central"
+      fontSize={11}
+      fontWeight={600}
+      fill="var(--color-tinta)"
+    >
+      {angka(Number(value))}
+    </text>
+  );
+}
+
 function useKurangiGerak() {
   const [kurangi, setKurangi] = useState(true);
 
@@ -98,6 +163,14 @@ export function GrafikPiramida({
     0,
   );
 
+  // Domain dilebihkan ~18% supaya ada ruang di ujung batang untuk label
+  // angka — tanpa ini, angka pada kelompok umur terbanyak akan terpotong.
+  const maksimum = Math.max(
+    1,
+    ...data.map((item) => Math.max(item.lakiAsli, item.perempuanAsli)),
+  );
+  const batasSumbu = Math.ceil(maksimum * 1.18);
+
   return (
     <TampilanData
       label="Pilih tampilan piramida atau tabel"
@@ -139,6 +212,7 @@ export function GrafikPiramida({
                 />
                 <XAxis
                   type="number"
+                  domain={[-batasSumbu, batasSumbu]}
                   axisLine={false}
                   tickLine={false}
                   tickMargin={8}
@@ -172,9 +246,14 @@ export function GrafikPiramida({
                   name="Laki-laki"
                   fill="var(--color-hijau-utama)"
                   maxBarSize={22}
-                  radius={[4, 0, 0, 4]}
+                  /* Batang laki bernilai negatif → recharts membalik arah
+                     radius. Supaya ujung LUAR (kiri) yang membulat dan sisi
+                     tengah (garis nol) tetap siku, dipakai pola yang sama
+                     dengan perempuan, bukan cerminannya. */
+                  radius={[0, 4, 4, 0]}
                   isAnimationActive={!kurangiGerak}
                   animationDuration={550}
+                  label={<LabelLaki />}
                 />
                 <Bar
                   dataKey="perempuan"
@@ -184,6 +263,7 @@ export function GrafikPiramida({
                   radius={[0, 4, 4, 0]}
                   isAnimationActive={!kurangiGerak}
                   animationDuration={550}
+                  label={<LabelPerempuan />}
                 />
               </BarChart>
             </ResponsiveContainer>

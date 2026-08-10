@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { simpanNamaPerangkat, type HasilSimpan } from "../actions";
+import { useNotifHasil } from "@/features/admin/components/notifikasi";
 import { UnggahFoto } from "./UnggahFoto";
 
 /**
@@ -26,6 +27,7 @@ export function FormPerangkat({
     simpanNamaPerangkat,
     null,
   );
+  useNotifHasil(hasil);
 
   return (
     <form action={aksi} className="space-y-6">
@@ -73,10 +75,6 @@ export function FormPerangkat({
             {hasil.pesan}
           </p>
         )}
-        <p className="w-full text-sm text-tinta-redup">
-          Foto bersifat opsional dan tersimpan otomatis saat dipilih atau
-          dihapus. Tombol di atas hanya untuk menyimpan nama.
-        </p>
       </div>
     </form>
   );

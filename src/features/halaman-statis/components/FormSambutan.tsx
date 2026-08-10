@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { Save } from "lucide-react";
 import { EditorArtikel } from "@/features/artikel/components/EditorArtikel";
 import { simpanSambutan, type HasilSimpan } from "../actions";
+import { useNotifHasil } from "@/features/admin/components/notifikasi";
 
 /**
  * Form naskah Sambutan Kepala Desa yang tampil di beranda.
@@ -18,18 +19,14 @@ export function FormSambutan({ kontenAwal }: { kontenAwal: string }) {
     simpanSambutan,
     null,
   );
+  useNotifHasil(hasil);
 
   return (
     <form action={aksi} className="max-w-3xl space-y-5">
       <input type="hidden" name="konten" value={konten} />
 
       <div className="rounded-xl border border-garis bg-white p-5">
-        <p className="mb-3 text-sm text-tinta-redup">
-          Tulis kata sambutan Kepala Desa yang tampil di halaman depan. Cukup
-          satu sampai dua paragraf. Nama dan foto Kepala Desa diatur di kolom
-          terpisah di atas. Kalau kotak ini dikosongkan, kutipan sambutannya
-          disembunyikan dari beranda.
-        </p>
+        <p className="mb-3 font-semibold text-tinta">Kata Sambutan</p>
         <EditorArtikel nilai={konten} onChange={setKonten} />
       </div>
 

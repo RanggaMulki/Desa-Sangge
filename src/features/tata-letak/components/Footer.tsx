@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
-  ArrowUpRight,
   Clock,
   LogIn,
   Mail,
@@ -10,7 +9,7 @@ import {
   Phone,
   ShieldCheck,
 } from "lucide-react";
-import { MENU_UTAMA, IDENTITAS, TAUTAN_LEMBAGA } from "../navigasi";
+import { MENU_UTAMA, IDENTITAS } from "../navigasi";
 import { ambilKontakPerJenis } from "@/features/kontak-layanan/queries";
 import { tautanWhatsApp, nomorTampil } from "@/lib/format";
 
@@ -51,7 +50,7 @@ export async function Footer() {
   return (
     <footer className="latar-footer-earthy text-[0.9375rem] leading-normal text-white">
       <div className="mx-auto max-w-7xl px-5 pb-8 pt-12 sm:pt-14 lg:px-8">
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-x-12">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3 lg:gap-x-12">
           {/* Kolom 1 — brand & pengantar */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
@@ -105,13 +104,6 @@ export async function Footer() {
                   </Link>
                 </li>
               ))}
-            </ul>
-          </nav>
-
-          {/* Kolom 3 — akses pemerintahan & tautan lembaga */}
-          <div>
-            <JudulKolom>Pemerintahan &amp; Akses</JudulKolom>
-            <ul className="mt-4 space-y-2.5 text-white/70">
               <li>
                 <Link
                   href="/admin/masuk"
@@ -124,26 +116,10 @@ export async function Footer() {
                   Login Perangkat Desa
                 </Link>
               </li>
-              {TAUTAN_LEMBAGA.map((tautan) => (
-                <li key={tautan.href}>
-                  <a
-                    href={tautan.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="group inline-flex items-center gap-1.5 hover:text-white"
-                  >
-                    {tautan.label}
-                    <ArrowUpRight
-                      className="size-3.5 shrink-0 text-white/40 transition-colors group-hover:text-hijau-muda"
-                      aria-hidden="true"
-                    />
-                  </a>
-                </li>
-              ))}
             </ul>
-          </div>
+          </nav>
 
-          {/* Kolom 4 — kantor, kontak, jam, layanan penting */}
+          {/* Kolom 3 — kantor, kontak, jam, layanan penting */}
           <div>
             <JudulKolom>Kantor {IDENTITAS.nama}</JudulKolom>
             <div className="mt-4 space-y-3 text-white/70">
@@ -244,15 +220,12 @@ export async function Footer() {
           </div>
         </div>
 
-        {/* Bar bawah: hak cipta kiri, kode wilayah kanan (menumpuk di HP) */}
-        <div className="mt-12 flex flex-col gap-2 border-t border-white/15 pt-6 text-sm text-white/55 sm:flex-row sm:items-center sm:justify-between">
+        {/* Bar bawah: hak cipta */}
+        <div className="mt-12 border-t border-white/15 pt-6 text-sm text-white/55">
           <p>
-            &copy; {new Date().getFullYear()} Pemerintah {IDENTITAS.nama}. Hak
-            Cipta Dilindungi.
+            &copy; {new Date().getFullYear()} Pemerintah {IDENTITAS.nama},{" "}
+            {IDENTITAS.wilayah}.
           </p>
-          {IDENTITAS.kodeWilayah && (
-            <p>Kode Wilayah {IDENTITAS.kodeWilayah}</p>
-          )}
         </div>
       </div>
     </footer>

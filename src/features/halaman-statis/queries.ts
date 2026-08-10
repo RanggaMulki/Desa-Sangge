@@ -1,11 +1,7 @@
 import { asc, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { halamanStatis, misi, pengaturan } from "@/db/schema";
-import {
-  KUNCI_FOTO_SAMBUTAN,
-  SLUG_HALAMAN,
-  type SlugHalaman,
-} from "./halaman";
+import { halamanStatis, misi } from "@/db/schema";
+import { SLUG_HALAMAN, type SlugHalaman } from "./halaman";
 import {
   ambilButirMisiHtml,
   gabungkanMisiHtml,
@@ -26,23 +22,6 @@ export async function ambilHalaman(slug: SlugHalaman) {
     .where(eq(halamanStatis.slug, slug))
     .limit(1);
   return halaman ?? null;
-}
-
-/**
- * URL foto khusus seksi Sambutan, atau null kalau pengurus belum mengunggahnya.
- *
- * Null berarti beranda memakai foto Kepala Desa dari data Perangkat sebagai
- * cadangan — jadi seksi Sambutan tidak pernah tanpa foto selama Kepala Desa
- * punya foto.
- */
-export async function ambilFotoSambutan(): Promise<string | null> {
-  const [baris] = await db
-    .select({ nilai: pengaturan.nilai })
-    .from(pengaturan)
-    .where(eq(pengaturan.kunci, KUNCI_FOTO_SAMBUTAN))
-    .limit(1);
-  const nilai = baris?.nilai?.trim();
-  return nilai ? nilai : null;
 }
 
 /**

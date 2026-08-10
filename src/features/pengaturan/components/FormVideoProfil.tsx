@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { Save } from "lucide-react";
 import { simpanVideoProfil, type HasilSimpan } from "../actions";
+import { useNotifHasil } from "@/features/admin/components/notifikasi";
 
 /**
  * Form tautan video profil YouTube. Pengurus cukup menempel tautannya —
@@ -14,6 +15,7 @@ export function FormVideoProfil({ tautanAwal }: { tautanAwal: string }) {
     simpanVideoProfil,
     null,
   );
+  useNotifHasil(hasil);
 
   return (
     <form action={aksi} className="max-w-2xl space-y-5">
@@ -21,21 +23,13 @@ export function FormVideoProfil({ tautanAwal }: { tautanAwal: string }) {
         <label htmlFor="video" className="block font-semibold text-tinta">
           Tautan video YouTube
         </label>
-        <p className="mb-3 mt-1 text-sm leading-relaxed text-tinta-redup">
-          Unggah dulu video profil desa ke <strong>YouTube</strong>, lalu buka
-          videonya, tekan <strong>Bagikan</strong>, dan tempel tautannya di
-          sini — misalnya{" "}
-          <span className="whitespace-nowrap">https://youtu.be/xxxxxxxxxxx</span>
-          . Videonya akan tampil di halaman depan, tepat di bawah Sambutan.
-          Kosongkan kotak ini untuk menyembunyikan video.
-        </p>
         <input
           id="video"
           name="video"
           type="url"
           defaultValue={tautanAwal}
           placeholder="https://www.youtube.com/watch?v=…"
-          className="w-full rounded-lg border border-garis bg-white px-3 py-2.5 focus:border-hijau-utama focus:outline-none focus:ring-2 focus:ring-hijau-muda"
+          className="mt-2 w-full rounded-lg border border-garis bg-white px-3 py-2.5 focus:border-hijau-utama focus:outline-none focus:ring-2 focus:ring-hijau-muda"
         />
       </div>
 

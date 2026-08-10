@@ -70,63 +70,6 @@ export async function simpanNamaPerangkat(
   }
 }
 
-/** Posisi Kepala Desa — dipakai bersama oleh bagan dan halaman Sambutan. */
-const POSISI_KADES = "kepala-desa";
-
-/**
- * Menyimpan HANYA nama Kepala Desa, dari halaman Sambutan.
- *
- * Menulis ke baris perangkat posisi "kepala-desa" — SUMBER YANG SAMA dengan
- * Bagan & Perangkat — supaya nama di beranda, bagan, dan sambutan tidak pernah
- * berbeda. Sengaja terpisah dari `simpanNamaPerangkat` (yang menyapu semua
- * slot): form Sambutan hanya punya satu field, jadi memakai aksi itu justru
- * akan mengosongkan nama jabatan lain.
- */
-export async function simpanNamaKepalaDesa(
-  _sebelumnya: HasilSimpan | null,
-  formData: FormData,
-): Promise<HasilSimpan> {
-  await pastikanPengurus();
-  try {
-    const nama = ((formData.get("nama") as string) ?? "").trim();
-
-    const [ada] = await db
-      .select({ id: perangkatDesa.id })
-      .from(perangkatDesa)
-      .where(
-        and(
-          eq(perangkatDesa.posisi, POSISI_KADES),
-          eq(perangkatDesa.aktif, true),
-        ),
-      )
-      .limit(1);
-
-    if (ada) {
-      await db
-        .update(perangkatDesa)
-        .set({ nama })
-        .where(eq(perangkatDesa.id, ada.id));
-    } else if (nama) {
-      const slot = slotTerurut().find((s) => s.kunci === POSISI_KADES);
-      await db.insert(perangkatDesa).values({
-        posisi: POSISI_KADES,
-        jabatan: slot?.jabatan ?? "Kepala Desa",
-        nama,
-        urutan: slot?.urutan ?? 0,
-      });
-    }
-
-    // Beranda menampilkan kartu sambutan; profil menampilkan bagan.
-    revalidatePath("/");
-    revalidatePath("/profil");
-    revalidatePath("/profil/pemerintahan");
-    return { ok: true, pesan: "Nama Kepala Desa tersimpan." };
-  } catch (e) {
-    console.error("Gagal menyimpan nama Kepala Desa:", e);
-    return { ok: false, pesan: "Gagal menyimpan. Coba lagi sebentar." };
-  }
-}
-
 /**
  * Menyimpan foto satu jabatan: foto naik ke R2, hanya link-nya yang masuk Neon.
  *

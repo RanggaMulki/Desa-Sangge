@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { Save } from "lucide-react";
 import { EditorArtikel } from "@/features/artikel/components/EditorArtikel";
 import { simpanSejarah, type HasilSimpan } from "../actions";
+import { useNotifHasil } from "@/features/admin/components/notifikasi";
 
 /**
  * Form naskah Sejarah dan Legenda Desa dengan dua editor terpisah.
@@ -25,16 +26,12 @@ export function FormSejarah({
     simpanSejarah,
     null,
   );
+  useNotifHasil(hasil);
 
   return (
     <form action={aksi} className="max-w-6xl space-y-6">
       <input type="hidden" name="sejarah" value={sejarah} />
       <input type="hidden" name="legenda" value={legenda} />
-
-      <p className="max-w-3xl text-sm leading-relaxed text-tinta-redup">
-        Sejarah wajib diisi. Legenda dapat dikosongkan terlebih dahulu dan
-        akan ditampilkan sebagai tanda "-" pada halaman Profil.
-      </p>
 
       <div className="grid items-start gap-6 xl:grid-cols-2">
         <section
@@ -48,10 +45,6 @@ export function FormSejarah({
             >
               Sejarah Desa
             </h2>
-            <p className="mt-1 text-sm leading-relaxed text-tinta-redup">
-              Tuliskan riwayat Desa Sangge berdasarkan sumber yang telah
-              diperiksa.
-            </p>
           </div>
           <div className="mt-5">
             <EditorArtikel
@@ -74,9 +67,6 @@ export function FormSejarah({
             >
               Legenda Desa
             </h2>
-            <p className="mt-1 text-sm leading-relaxed text-tinta-redup">
-              Tuliskan cerita lisan atau legenda yang diwariskan masyarakat.
-            </p>
           </div>
           <div className="mt-5">
             <EditorArtikel

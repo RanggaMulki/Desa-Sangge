@@ -18,15 +18,15 @@ export function SidebarAdmin() {
   const pathname = usePathname();
 
   return (
-    <nav aria-label="Menu pengelolaan" className="space-y-6">
+    <nav aria-label="Menu pengelolaan" className="space-y-7">
       {MENU_ADMIN.map((kelompok, i) => (
         <div key={kelompok.judul ?? i}>
           {kelompok.judul && (
-            <p className="mb-1 px-3 text-xs font-semibold uppercase text-tinta-redup">
+            <p className="mb-2 px-3.5 text-[0.8125rem] font-semibold uppercase tracking-wide text-tinta-redup">
               {kelompok.judul}
             </p>
           )}
-          <ul className="space-y-1">
+          <ul className="space-y-1.5">
             {kelompok.butir.map((b) => {
               const aktif =
                 b.href === "/admin"
@@ -37,14 +37,14 @@ export function SidebarAdmin() {
                   <Link
                     href={b.href}
                     aria-current={aktif ? "page" : undefined}
-                    className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium ${
+                    className={`flex min-h-12 items-center gap-3.5 rounded-lg px-3.5 py-2.5 text-base font-medium ${
                       aktif
                         ? "bg-hijau-muda text-hijau-utama"
                         : "text-tinta hover:bg-permukaan"
                     }`}
                   >
                     <svg
-                      className={`h-5 w-5 shrink-0 ${aktif ? "text-hijau-utama" : "text-tinta-redup"}`}
+                      className={`h-6 w-6 shrink-0 ${aktif ? "text-hijau-utama" : "text-tinta-redup"}`}
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24"
@@ -60,7 +60,7 @@ export function SidebarAdmin() {
                     </svg>
                     <span className="flex-1">{b.label}</span>
                     {!b.siap && (
-                      <span className="rounded bg-permukaan px-1.5 py-0.5 text-[0.65rem] font-semibold uppercase text-tinta-redup">
+                      <span className="rounded bg-permukaan px-1.5 py-0.5 text-[0.7rem] font-semibold uppercase text-tinta-redup">
                         segera
                       </span>
                     )}

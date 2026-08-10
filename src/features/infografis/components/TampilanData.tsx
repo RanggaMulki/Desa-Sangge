@@ -55,7 +55,7 @@ export function TampilanData({
     const aktif = mode === nilai;
 
     return (
-      <li role="presentation">
+      <li role="presentation" className="relative z-10 w-full">
         <button
           type="button"
           role="tab"
@@ -65,9 +65,9 @@ export function TampilanData({
           tabIndex={aktif ? 0 : -1}
           onClick={() => setMode(nilai)}
           onKeyDown={(event) => pindahDenganKeyboard(event, nilai)}
-          className={`min-h-11 px-4 text-sm font-bold sm:px-5 ${
+          className={`w-full min-w-[4.75rem] bg-transparent px-4 text-sm font-bold active:[transform:none] sm:min-w-[5.5rem] sm:px-5 ${
             aktif
-              ? "bg-hijau-utama text-white"
+              ? "text-white"
               : "text-tinta-redup hover:bg-permukaan hover:text-tinta"
           }`}
         >
@@ -84,8 +84,14 @@ export function TampilanData({
           role="tablist"
           aria-orientation="horizontal"
           aria-label={label}
-          className="inline-grid grid-cols-2 divide-x divide-garis overflow-hidden rounded-lg border border-garis bg-latar"
+          className="relative isolate inline-grid grid-cols-2 overflow-hidden rounded-lg border border-garis bg-white shadow-[0_1px_2px_rgba(46,48,62,0.06)]"
         >
+          <span
+            aria-hidden="true"
+            className={`pointer-events-none absolute inset-y-0 left-0 z-0 w-1/2 bg-hijau-utama transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+              mode === "tabel" ? "translate-x-full" : "translate-x-0"
+            }`}
+          />
           {tab("grafik", "Grafik", idTabGrafik, idPanelGrafik)}
           {tab("tabel", "Tabel", idTabTabel, idPanelTabel)}
         </ul>
@@ -97,7 +103,9 @@ export function TampilanData({
         aria-labelledby={idTabGrafik}
         hidden={mode !== "grafik"}
       >
-        {mode === "grafik" ? grafik : null}
+        {mode === "grafik" ? (
+          <div className="panel-data-masuk">{grafik}</div>
+        ) : null}
       </div>
       <div
         role="tabpanel"
@@ -105,7 +113,9 @@ export function TampilanData({
         aria-labelledby={idTabTabel}
         hidden={mode !== "tabel"}
       >
-        {mode === "tabel" ? tabel : null}
+        {mode === "tabel" ? (
+          <div className="panel-data-masuk">{tabel}</div>
+        ) : null}
       </div>
     </div>
   );

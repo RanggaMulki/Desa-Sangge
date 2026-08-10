@@ -1,15 +1,13 @@
 "use server";
 
-import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { halamanStatis, media, pengaturan } from "@/db/schema";
+import { halamanStatis } from "@/db/schema";
 import { bersihkanHtml } from "@/lib/sanitasi";
-import { KUNCI_FOTO_SAMBUTAN, SLUG_HALAMAN } from "./halaman";
+import { SLUG_HALAMAN } from "./halaman";
 import { gabungkanNaskahSejarah } from "./naskah-sejarah";
 import { punyaIsiHtml } from "./visi-misi-html";
 import { pastikanPengurus } from "@/features/auth/queries";
-import { hapusMedia, unggahMedia } from "@/features/media/actions";
 
 export type HasilSimpan = { ok: boolean; pesan: string };
 
@@ -176,101 +174,3 @@ export async function simpanSambutan(
   }
 }
 
-export type HasilFotoSambutan =
-  | { ok: true; url: string | null; pesan: string }
-  | { ok: false; pesan: string };
-
-/**
- * Menghapus satu berkas media berdasarkan link-nya (kolom url).
- *
- * Foto lama yang diganti/dihapus dibersihkan dari R2 + registri media supaya
- * tidak jadi berkas yatim yang diam-diam memakan kuota. Foto bawaan yang bukan
- * hasil unggahan (link-nya bukan /media/…) tidak punya catatan media dan
- * dilewati — pola yang sama dengan hapusFotoGaleri.
- */
-async function bersihkanFotoLama(url: string | null) {
-  if (!url || !url.startsWith("/media/")) return;
-  const [rekam] = await db
-    .select({ id: media.id })
-    .from(media)
-    .where(eq(media.url, url))
-    .limit(1);
-  if (!rekam) return;
-  const hasil = await hapusMedia(rekam.id);
-  if (!hasil.ok) {
-    console.error("Foto sambutan lama gagal dibersihkan:", rekam.id, hasil.pesan);
-  }
-}
-
-/**
- * Mengunggah foto khusus seksi Sambutan.
- *
- * Foto disimpan di R2 (lewat unggahMedia) dan link-nya dicatat di tabel
- * `pengaturan` (kunci "sambutan.foto"), bukan kolom baru di halaman_statis —
- * jadi tidak perlu migrasi. Byte fotonya sudah dikecilkan di peramban sebelum
- * sampai ke sini. Foto lama, kalau ada, dibersihkan setelah yang baru tercatat.
- */
-export async function simpanFotoSambutan(
-  formData: FormData,
-): Promise<HasilFotoSambutan> {
-  await pastikanPengurus();
-  const berkas = formData.get("foto");
-  if (!(berkas instanceof File) || berkas.size === 0) {
-    return { ok: false, pesan: "Foto tidak terbaca. Coba pilih ulang." };
-  }
-
-  const unggah = await unggahMedia(berkas, "sambutan");
-  if (!unggah.ok) return { ok: false, pesan: unggah.pesan };
-
-  const [lama] = await db
-    .select({ nilai: pengaturan.nilai })
-    .from(pengaturan)
-    .where(eq(pengaturan.kunci, KUNCI_FOTO_SAMBUTAN))
-    .limit(1);
-
-  try {
-    await db
-      .insert(pengaturan)
-      .values({ kunci: KUNCI_FOTO_SAMBUTAN, nilai: unggah.url })
-      .onConflictDoUpdate({
-        target: pengaturan.kunci,
-        set: { nilai: unggah.url },
-      });
-  } catch (e) {
-    console.error("Gagal mencatat foto sambutan:", e);
-    // Foto telanjur di R2 tapi gagal dicatat — hapus lagi supaya tidak yatim.
-    await bersihkanFotoLama(unggah.url);
-    return { ok: false, pesan: "Foto gagal disimpan. Coba lagi sebentar." };
-  }
-
-  if (lama?.nilai && lama.nilai !== unggah.url) {
-    await bersihkanFotoLama(lama.nilai);
-  }
-
-  revalidatePath("/");
-  revalidatePath("/admin/sambutan");
-  return { ok: true, url: unggah.url, pesan: "Foto sambutan tersimpan." };
-}
-
-/**
- * Menghapus foto khusus sambutan; beranda kembali memakai foto Kepala Desa.
- */
-export async function hapusFotoSambutan(): Promise<HasilFotoSambutan> {
-  await pastikanPengurus();
-  const [lama] = await db
-    .select({ nilai: pengaturan.nilai })
-    .from(pengaturan)
-    .where(eq(pengaturan.kunci, KUNCI_FOTO_SAMBUTAN))
-    .limit(1);
-
-  await db.delete(pengaturan).where(eq(pengaturan.kunci, KUNCI_FOTO_SAMBUTAN));
-  if (lama?.nilai) await bersihkanFotoLama(lama.nilai);
-
-  revalidatePath("/");
-  revalidatePath("/admin/sambutan");
-  return {
-    ok: true,
-    url: null,
-    pesan: "Foto khusus dihapus. Beranda kembali memakai foto Kepala Desa.",
-  };
-}

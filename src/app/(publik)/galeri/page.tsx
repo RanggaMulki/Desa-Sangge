@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { GridGaleri } from "@/features/galeri/components/GridGaleri";
-import { KepalaHalamanTerpusat } from "@/features/tata-letak/components/KepalaHalamanTerpusat";
 
 export const metadata: Metadata = {
   title: "Galeri Kegiatan",
@@ -11,18 +10,13 @@ export const revalidate = 3600;
 
 export default function Galeri() {
   return (
-    <div className="min-h-screen bg-latar">
-      <KepalaHalamanTerpusat judul="Galeri Kegiatan" />
-
-      <section className="latar-arsip-galeri relative isolate overflow-hidden border-y border-hijau-utama/15">
-        <div
-          aria-hidden="true"
-          className="kisi-arsip-galeri pointer-events-none absolute inset-0 -z-10"
-        />
-        <div className="mx-auto max-w-7xl px-5 pb-16 pt-4 sm:pb-20 sm:pt-5 lg:px-8">
-          <GridGaleri />
-        </div>
-      </section>
-    </div>
+    // Satu seksi, latar warna solid, isinya hanya foto. Judul disimpan sebagai
+    // sr-only supaya halaman tetap punya <h1> untuk pembaca layar & mesin cari.
+    <section className="min-h-screen bg-latar">
+      <h1 className="sr-only">Galeri Kegiatan Desa Sangge</h1>
+      <div className="mx-auto max-w-7xl px-5 py-12 sm:py-14 lg:px-8">
+        <GridGaleri />
+      </div>
+    </section>
   );
 }

@@ -82,7 +82,7 @@ export function Header() {
               {IDENTITAS.nama}
             </span>
             <span className="block text-sm text-white/80 2xl:text-base">
-              {IDENTITAS.kabupaten}
+              Kecamatan Klego · {IDENTITAS.kabupaten}
             </span>
           </span>
         </Link>

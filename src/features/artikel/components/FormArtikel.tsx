@@ -431,9 +431,6 @@ export function FormArtikel({
         {kanal === "informasi" && !awal && (
           <fieldset>
             <legend className="text-lg font-bold">Bentuk informasi</legend>
-            <p className="mt-1 text-sm text-tinta-redup">
-              Pilih bentuknya terlebih dahulu. Isian di bawah akan menyesuaikan.
-            </p>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               {(["materi", "poster"] as const).map((jenis) => {
                 const dipilih = jenisKonten === jenis;
@@ -554,11 +551,6 @@ export function FormArtikel({
               },
             })}
           />
-          <p className="mt-1.5 text-sm text-tinta-redup">
-            {berupaPoster
-              ? "Nama ini dipakai untuk daftar admin dan pembaca layar, tidak menjadi deskripsi poster."
-              : `Judul akan tampil pada daftar ${kanal === "berita" ? "berita" : "materi"} dan halaman bacaan warga.`}
-          </p>
           {errors.judul && (
             <p role="alert" className="mt-1.5 text-sm text-merah-layanan">
               {errors.judul.message}
@@ -618,9 +610,6 @@ export function FormArtikel({
                 },
               })}
             />
-            <p className="mt-1.5 text-sm text-tinta-redup">
-              Ringkasan membantu warga memahami isi materi sebelum membukanya.
-            </p>
             {errors.ringkasan && (
               <p role="alert" className="mt-1 text-sm text-merah-layanan">
                 {errors.ringkasan.message}
@@ -632,13 +621,8 @@ export function FormArtikel({
 
       <section className="rounded-lg border border-garis bg-white p-5 sm:p-6">
         <h2 className="text-lg font-bold">
-          {berupaPoster ? "Gambar poster" : "Foto sampul"}
+          {berupaPoster ? "Gambar poster (wajib)" : "Foto sampul (opsional)"}
         </h2>
-        <p className="mt-1 text-sm text-tinta-redup">
-          {berupaPoster
-            ? "Wajib. Unggah satu poster yang sudah memuat seluruh tulisan dan informasi."
-            : "Opsional. Foto sampul memperjelas topik materi, tetapi bukan poster."}
-        </p>
 
         {sampulTampil && (
           <div
@@ -699,23 +683,17 @@ export function FormArtikel({
             </button>
           )}
         </div>
-        <p className="mt-2 text-sm text-tinta-redup">
-          {berupaPoster
-            ? "Gunakan gambar potret yang tajam. JPG, PNG, atau HEIC; sistem tetap mengecilkan ukuran berkas."
-            : "JPG, PNG, atau HEIC. Foto otomatis dikecilkan agar halaman tetap ringan."}
-        </p>
       </section>
 
       {!berupaPoster && (
         <>
           <section className="rounded-lg border border-garis bg-white p-5 sm:p-6">
-            <label htmlFor="isi-artikel-editor" className="text-lg font-bold">
+            <label
+              htmlFor="isi-artikel-editor"
+              className="mb-3 block text-lg font-bold"
+            >
               {kanal === "berita" ? "Isi berita atau pengumuman" : "Isi materi"}
             </label>
-            <p className="mb-3 mt-1 text-sm text-tinta-redup">
-              Tulis penjelasan lengkap. Gunakan judul bagian dan daftar agar
-              mudah dibaca di HP.
-            </p>
             <EditorArtikel
               nilai={awal?.konten ?? "<p></p>"}
               onChange={(html) =>
@@ -730,11 +708,7 @@ export function FormArtikel({
           </section>
 
           <section className="rounded-lg border border-garis bg-white p-5 sm:p-6">
-            <h2 className="text-lg font-bold">Berkas lampiran</h2>
-            <p className="mt-1 text-sm text-tinta-redup">
-              Opsional. Tambahkan leaflet PDF atau infografis gambar yang bisa
-              diunduh warga.
-            </p>
+            <h2 className="text-lg font-bold">Berkas lampiran (opsional)</h2>
 
             {(lampiranTampil.length > 0 || lampiranBaru.length > 0) && (
               <ul className="mt-4 divide-y divide-garis rounded-lg border border-garis">

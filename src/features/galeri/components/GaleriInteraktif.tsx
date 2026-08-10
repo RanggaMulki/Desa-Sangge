@@ -133,99 +133,96 @@ export function GaleriInteraktif({ foto }: { foto: Foto[] }) {
 
   return (
     <>
-      <div className="mb-5 flex flex-col gap-3 border-b border-garis pb-4 sm:flex-row sm:items-center sm:justify-between">
-        <p className="font-semibold text-tinta">
-          {tersaring.length} foto dokumentasi
-        </p>
-
-        {tahun.length > 1 && (
-          <div
-            role="group"
-            aria-label="Saring galeri berdasarkan tahun"
-            className="flex max-w-full gap-1 overflow-x-auto rounded-lg border border-garis bg-white p-1"
-          >
-            {["semua", ...tahun].map((item) => {
-              const aktif = tahunAktif === item;
-              return (
-                <button
-                  key={item}
-                  type="button"
-                  aria-pressed={aktif}
-                  onClick={() => {
-                    setBukaId(null);
-                    setTahunAktif(item);
-                  }}
-                  className={`min-h-11 shrink-0 rounded-md px-3.5 text-sm font-bold ${
-                    aktif
-                      ? "bg-hijau-utama text-white"
-                      : "text-tinta hover:bg-permukaan"
-                  }`}
-                >
-                  {item === "semua" ? "Semua tahun" : item}
-                </button>
-              );
-            })}
-          </div>
-        )}
-      </div>
+      {/* Filter tahun hanya muncul bila foto tersebar di lebih dari satu tahun.
+          Bar hitungan "N foto dokumentasi" dihapus — seksi ini murni foto. */}
+      {tahun.length > 1 && (
+        <div
+          role="group"
+          aria-label="Saring galeri berdasarkan tahun"
+          className="mb-5 flex max-w-full gap-1 overflow-x-auto rounded-lg border border-garis bg-white p-1"
+        >
+          {["semua", ...tahun].map((item) => {
+            const aktif = tahunAktif === item;
+            return (
+              <button
+                key={item}
+                type="button"
+                aria-pressed={aktif}
+                onClick={() => {
+                  setBukaId(null);
+                  setTahunAktif(item);
+                }}
+                className={`min-h-11 shrink-0 rounded-md px-3.5 text-sm font-bold ${
+                  aktif
+                    ? "bg-hijau-utama text-white"
+                    : "text-tinta hover:bg-permukaan"
+                }`}
+              >
+                {item === "semua" ? "Semua tahun" : item}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       <ul
-        className="grid auto-rows-[27rem] grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+        className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
         aria-label="Foto kegiatan Desa Sangge"
       >
         {tersaring.map((item, index) => (
           <li key={item.id} className="min-w-0">
-            <figure className="group relative h-full overflow-hidden rounded-lg bg-permukaan shadow-[0_12px_28px_rgba(46,48,62,0.14)] ring-1 ring-white/70">
-              <Image
-                src={item.gambarUrl}
-                alt={
-                  item.judul ||
-                  item.keterangan ||
-                  "Dokumentasi kegiatan Desa Sangge"
-                }
-                fill
-                sizes="(min-width: 1024px) 24rem, (min-width: 640px) 50vw, 100vw"
-                quality={80}
-                priority={index < 2}
-                className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03]"
-              />
+            <figure className="group flex h-full flex-col overflow-hidden rounded-lg bg-white shadow-[0_12px_28px_rgba(46,48,62,0.12)] ring-1 ring-garis">
+              {/* Area foto — rasio tetap supaya semua kartu seragam. */}
+              <div className="relative aspect-[4/3] bg-permukaan">
+                <Image
+                  src={item.gambarUrl}
+                  alt={
+                    item.judul ||
+                    item.keterangan ||
+                    "Dokumentasi kegiatan Desa Sangge"
+                  }
+                  fill
+                  sizes="(min-width: 1024px) 24rem, (min-width: 640px) 50vw, 100vw"
+                  quality={80}
+                  priority={index < 2}
+                  className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03]"
+                />
 
-              {(item.judul || item.tanggal) && (
-                <figcaption className="absolute inset-x-0 bottom-0 bg-tinta/90 px-4 py-3 pr-16 text-white">
-                  {item.judul && (
-                    <p className="line-clamp-2 font-bold leading-snug">
-                      {item.judul}
-                    </p>
-                  )}
-                  {item.tanggal && (
-                    <p className="mt-1 text-sm text-white/75">
-                      {tanggalPendek(item.tanggal)}
-                    </p>
-                  )}
-                </figcaption>
-              )}
-
-              <button
-                type="button"
-                onClick={(event) => {
-                  pemicuRef.current = event.currentTarget;
-                  setBukaId(item.id);
-                }}
-                aria-label={
-                  item.judul
-                    ? `Lihat foto: ${item.judul}`
-                    : "Lihat foto kegiatan Desa Sangge"
-                }
-                className="absolute inset-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-white"
-              >
-                <span className="sr-only">Buka pratinjau foto</span>
-                <span
-                  aria-hidden="true"
-                  className="absolute right-3 top-3 grid size-11 place-items-center rounded-full bg-tinta/80 text-white opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    pemicuRef.current = event.currentTarget;
+                    setBukaId(item.id);
+                  }}
+                  aria-label={
+                    item.judul
+                      ? `Lihat foto: ${item.judul}`
+                      : "Lihat foto kegiatan Desa Sangge"
+                  }
+                  className="absolute inset-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-white"
                 >
-                  <ZoomIn size={20} />
-                </span>
-              </button>
+                  <span className="sr-only">Buka pratinjau foto</span>
+                  <span
+                    aria-hidden="true"
+                    className="absolute right-3 top-3 grid size-11 place-items-center rounded-full bg-tinta/80 text-white opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
+                  >
+                    <ZoomIn size={20} />
+                  </span>
+                </button>
+              </div>
+
+              {/* Nama kegiatan + tanggal DI BAWAH foto. Ukuran & font seragam;
+                  judul dijaga maksimal dua baris supaya tinggi kartu sama. */}
+              <figcaption className="flex flex-1 flex-col p-4">
+                <p className="line-clamp-2 min-h-[2.75rem] text-base font-semibold leading-snug text-tinta">
+                  {item.judul || "Dokumentasi kegiatan Desa Sangge"}
+                </p>
+                {item.tanggal && (
+                  <p className="mt-1 text-sm text-tinta-redup">
+                    {tanggalPendek(item.tanggal)}
+                  </p>
+                )}
+              </figcaption>
             </figure>
           </li>
         ))}

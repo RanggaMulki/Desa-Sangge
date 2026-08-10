@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
+import { notifSwal } from "@/features/admin/components/notifikasi";
 import { konfirmasi } from "@/lib/alert";
 import { siapkanGambarUntukUnggah } from "@/features/media/gambar-klien";
 import {
@@ -36,6 +37,11 @@ export function FormGaleri({ awal }: { awal: FotoGaleri[] }) {
   const [hapusId, setHapusId] = useState<string | null>(null);
   const [ubahId, setUbahId] = useState<string | null>(null);
   const [namaUbah, setNamaUbah] = useState("");
+
+  // Toast SweetAlert2 tiap kali ada pesan hasil (unggah, ubah nama, hapus).
+  useEffect(() => {
+    if (pesan) notifSwal(pesan.ok, pesan.teks);
+  }, [pesan]);
 
   async function saatPilihFoto(e: React.ChangeEvent<HTMLInputElement>) {
     const berkas = e.target.files?.[0];
@@ -163,9 +169,6 @@ export function FormGaleri({ awal }: { awal: FotoGaleri[] }) {
               className="hidden"
             />
           </label>
-          <p className="text-sm text-tinta-redup">
-            JPG, PNG, WEBP, GIF, dan HEIC (iPhone) didukung. Foto otomatis dikecilkan.
-          </p>
         </div>
 
         {pesan && (

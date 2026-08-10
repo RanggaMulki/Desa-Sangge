@@ -79,3 +79,23 @@ export async function pastikanPengurus() {
   }
   return akun;
 }
+
+/**
+ * Daftar semua akun pengurus untuk halaman Kelola Akun.
+ *
+ * `email` di database itu nama pengguna (nama kolom historis). Kata sandinya
+ * TIDAK pernah ikut dibaca — hanya hash yang tersimpan, dan itu pun tak
+ * diperlukan di sini.
+ */
+export async function ambilSemuaPengguna() {
+  return db
+    .select({
+      id: pengguna.id,
+      nama: pengguna.nama,
+      namaPengguna: pengguna.email,
+      aktif: pengguna.aktif,
+      dibuatPada: pengguna.dibuatPada,
+    })
+    .from(pengguna)
+    .orderBy(asc(pengguna.dibuatPada));
+}

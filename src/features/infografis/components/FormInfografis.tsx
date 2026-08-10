@@ -1,7 +1,9 @@
 "use client";
 
 import { useActionState } from "react";
+import { ChevronDown } from "lucide-react";
 import { simpanInfografis, type HasilSimpan } from "../actions";
+import { useNotifHasil } from "@/features/admin/components/notifikasi";
 import { KATEGORI_INFOGRAFIS } from "../kategori";
 
 const KUNCI_KHUSUS = new Set([
@@ -10,13 +12,17 @@ const KUNCI_KHUSUS = new Set([
   "umur-perempuan",
 ]);
 
+/** Gaya seragam untuk semua kotak angka: besar, rata kanan, tanpa panah spinner. */
+const KELAS_ANGKA =
+  "min-h-11 w-full rounded-lg border border-garis bg-white px-3 py-2.5 text-right text-base tabular-nums outline-none [appearance:textfield] focus:border-hijau-utama focus:ring-2 focus:ring-hijau-muda [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none";
+
 function InputAngka({
   id,
   name,
   nilai,
   label,
 }: {
-  id: string;
+  id?: string;
   name: string;
   nilai: number;
   label: string;
@@ -32,8 +38,56 @@ function InputAngka({
       required
       defaultValue={nilai}
       aria-label={label}
-      className="w-full rounded-lg border border-garis bg-white px-3 py-2.5 text-right tabular-nums focus:border-hijau-utama focus:outline-none focus:ring-2 focus:ring-hijau-muda"
+      className={KELAS_ANGKA}
     />
+  );
+}
+
+/** Field berlabel di atas (untuk angka pokok & periode). */
+function Field({ judul, children }: { judul: string; children: React.ReactNode }) {
+  return (
+    <label className="block">
+      <span className="mb-1.5 block text-sm font-semibold text-tinta">
+        {judul}
+      </span>
+      {children}
+    </label>
+  );
+}
+
+/** Seksi lipat dengan judul + jumlah butir dan panah penanda buka/tutup. */
+function SeksiLipat({
+  judul,
+  jumlah,
+  satuan,
+  bukaAwal,
+  children,
+}: {
+  judul: string;
+  jumlah: number;
+  satuan: string;
+  bukaAwal?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <details
+      open={bukaAwal}
+      className="group overflow-hidden rounded-xl border border-garis bg-white"
+    >
+      <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-5 py-3.5 hover:bg-permukaan/50 [&::-webkit-details-marker]:hidden">
+        <span className="flex flex-wrap items-center gap-2 font-bold text-tinta">
+          {judul}
+          <span className="rounded-full bg-permukaan px-2.5 py-0.5 text-xs font-semibold text-tinta-redup">
+            {jumlah} {satuan}
+          </span>
+        </span>
+        <ChevronDown
+          className="size-5 shrink-0 text-tinta-redup transition-transform group-open:rotate-180"
+          aria-hidden="true"
+        />
+      </summary>
+      <div className="border-t border-garis p-5">{children}</div>
+    </details>
   );
 }
 
@@ -52,216 +106,173 @@ export function FormInfografis({
     simpanInfografis,
     null,
   );
-  const gender = KATEGORI_INFOGRAFIS.find(
-    (item) => item.kunci === "jenis-kelamin",
-  );
-  const umurLaki = KATEGORI_INFOGRAFIS.find(
-    (item) => item.kunci === "umur-laki-laki",
-  );
+  useNotifHasil(hasil);
+  const gender = KATEGORI_INFOGRAFIS.find((i) => i.kunci === "jenis-kelamin");
+  const umurLaki = KATEGORI_INFOGRAFIS.find((i) => i.kunci === "umur-laki-laki");
   const umurPerempuan = KATEGORI_INFOGRAFIS.find(
-    (item) => item.kunci === "umur-perempuan",
+    (i) => i.kunci === "umur-perempuan",
   );
 
   return (
     <form action={aksi} className="space-y-6">
-      <div className="rounded-lg bg-permukaan p-4 text-tinta-redup">
-        Isi data agregat tanpa nama atau NIK warga. Jumlah pada jenis kelamin,
-        piramida umur, status perkawinan, dan pendidikan akan diperiksa
-        otomatis agar sama dengan total penduduk. Agama boleh seluruhnya 0 bila
-        sumber data belum menyediakannya.
-      </div>
-
+      {/* --- Periode data --- */}
       <fieldset className="rounded-xl border border-garis bg-white p-5 sm:p-6">
         <legend className="px-2 text-lg font-bold text-tinta">
-          Periode dan angka utama
+          Periode data
         </legend>
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          <label className="block">
-            <span className="mb-2 block font-semibold text-tinta">Tahun</span>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <Field judul="Tahun">
             <input
               name="tahun"
               type="number"
+              inputMode="numeric"
               min={2000}
               max={2100}
               required
               defaultValue={tahunAwal}
-              className="w-full rounded-lg border border-garis bg-white px-3 py-2.5 tabular-nums focus:border-hijau-utama focus:outline-none focus:ring-2 focus:ring-hijau-muda"
+              className={KELAS_ANGKA}
             />
-          </label>
-          <label className="block">
-            <span className="mb-2 block font-semibold text-tinta">
-              Semester
-            </span>
+          </Field>
+          <Field judul="Semester">
             <select
               name="semester"
               defaultValue={semesterAwal}
-              className="min-h-12 w-full rounded-lg border border-garis bg-white px-3 py-2.5 focus:border-hijau-utama focus:outline-none focus:ring-2 focus:ring-hijau-muda"
+              className="min-h-11 w-full rounded-lg border border-garis bg-white px-3 py-2.5 text-base outline-none focus:border-hijau-utama focus:ring-2 focus:ring-hijau-muda"
             >
               <option value="Gasal">Gasal</option>
               <option value="Genap">Genap</option>
             </select>
-          </label>
-          <label className="block">
-            <span className="mb-2 block font-semibold text-tinta">
-              Total penduduk
-            </span>
+          </Field>
+        </div>
+      </fieldset>
+
+      {/* --- Angka pokok --- */}
+      <fieldset className="rounded-xl border border-garis bg-white p-5 sm:p-6">
+        <legend className="px-2 text-lg font-bold text-tinta">
+          Angka pokok penduduk
+        </legend>
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <Field judul="Total penduduk">
             <InputAngka
               id="total-penduduk"
               name="total-penduduk"
               nilai={ringkasanAwal.penduduk}
               label="Total penduduk"
             />
-          </label>
+          </Field>
           {gender?.variabel.map((label, index) => (
-            <label key={label} className="block">
-              <span className="mb-2 block font-semibold text-tinta">
-                {label}
-              </span>
+            <Field key={label} judul={label}>
               <InputAngka
                 id={`n-jenis-kelamin-${index}`}
                 name={`n-jenis-kelamin-${index}`}
                 nilai={nilaiAwal["jenis-kelamin"]?.[label] ?? 0}
                 label={`Jumlah ${label.toLowerCase()}`}
               />
-            </label>
+            </Field>
           ))}
-          <label className="block">
-            <span className="mb-2 block font-semibold text-tinta">
-              Jumlah KK
-            </span>
+          <Field judul="Jumlah KK">
             <InputAngka
               id="jumlah-kk"
               name="jumlah-kk"
               nilai={ringkasanAwal.kk}
               label="Jumlah kepala keluarga"
             />
-          </label>
+          </Field>
         </div>
-        <p className="mt-5 text-sm leading-relaxed text-tinta-redup">
-          Simpan hanya angka agregat. Nama dan NIK warga tidak dimasukkan ke
-          website.
-        </p>
       </fieldset>
 
+      {/* --- Piramida umur: kartu per kelompok, tanpa geser horizontal di HP --- */}
       {umurLaki && umurPerempuan && (
-        <details open className="rounded-xl border border-garis bg-white">
-          <summary className="cursor-pointer list-none px-5 py-4 font-semibold [&::-webkit-details-marker]:hidden">
-            Piramida Penduduk
-            <span className="ml-2 text-sm font-normal text-tinta-redup">
-              {umurLaki.variabel.length} kelompok umur
-            </span>
-          </summary>
-          <div className="overflow-x-auto border-t border-garis px-5 pb-5 pt-4">
-            <p className="mb-4 text-sm text-tinta-redup">
-              Isi jumlah laki-laki dan perempuan untuk setiap kelompok umur.
-            </p>
-            <table className="w-full min-w-[38rem]">
-              <thead>
-                <tr className="text-left text-sm text-tinta-redup">
-                  <th className="pb-2 font-medium">Kelompok umur</th>
-                  <th className="w-40 px-2 pb-2 text-right font-medium">
-                    Laki-laki
-                  </th>
-                  <th className="w-40 pb-2 pl-2 text-right font-medium">
-                    Perempuan
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {umurLaki.variabel.map((label, index) => (
-                  <tr
-                    key={label}
-                    className="border-t border-garis/70 align-middle"
-                  >
-                    <th className="py-2 pr-4 text-left font-medium">{label}</th>
-                    <td className="px-2 py-2">
-                      <InputAngka
-                        id={`n-umur-laki-laki-${index}`}
-                        name={`n-umur-laki-laki-${index}`}
-                        nilai={nilaiAwal["umur-laki-laki"]?.[label] ?? 0}
-                        label={`Laki-laki usia ${label}`}
-                      />
-                    </td>
-                    <td className="py-2 pl-2">
-                      <InputAngka
-                        id={`n-umur-perempuan-${index}`}
-                        name={`n-umur-perempuan-${index}`}
-                        nilai={nilaiAwal["umur-perempuan"]?.[label] ?? 0}
-                        label={`Perempuan usia ${label}`}
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <SeksiLipat
+          judul="Piramida Penduduk"
+          jumlah={umurLaki.variabel.length}
+          satuan="kelompok umur"
+          bukaAwal
+        >
+          {/* Judul kolom hanya di layar lebar */}
+          <div className="hidden px-1 pb-2 text-sm font-semibold text-tinta-redup sm:grid sm:grid-cols-[minmax(0,1fr)_9rem_9rem] sm:gap-4">
+            <span>Kelompok umur</span>
+            <span className="text-right">Laki-laki</span>
+            <span className="text-right">Perempuan</span>
           </div>
-        </details>
+          <div className="divide-y divide-garis/70">
+            {umurLaki.variabel.map((label, index) => (
+              <div
+                key={label}
+                className="grid gap-2 py-3 sm:grid-cols-[minmax(0,1fr)_9rem_9rem] sm:items-center sm:gap-4"
+              >
+                <span className="font-medium text-tinta">{label}</span>
+                <div className="flex items-center gap-2 sm:block">
+                  <span className="w-20 shrink-0 text-sm text-tinta-redup sm:hidden">
+                    Laki-laki
+                  </span>
+                  <InputAngka
+                    id={`n-umur-laki-laki-${index}`}
+                    name={`n-umur-laki-laki-${index}`}
+                    nilai={nilaiAwal["umur-laki-laki"]?.[label] ?? 0}
+                    label={`Laki-laki usia ${label}`}
+                  />
+                </div>
+                <div className="flex items-center gap-2 sm:block">
+                  <span className="w-20 shrink-0 text-sm text-tinta-redup sm:hidden">
+                    Perempuan
+                  </span>
+                  <InputAngka
+                    id={`n-umur-perempuan-${index}`}
+                    name={`n-umur-perempuan-${index}`}
+                    nilai={nilaiAwal["umur-perempuan"]?.[label] ?? 0}
+                    label={`Perempuan usia ${label}`}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </SeksiLipat>
       )}
 
+      {/* --- Kategori lain (agama, pendidikan, pekerjaan, dst.) --- */}
       {KATEGORI_INFOGRAFIS.filter(
         (kategori) => !KUNCI_KHUSUS.has(kategori.kunci),
-      ).map((kategori) => {
-        const nilai = nilaiAwal[kategori.kunci] ?? {};
-        return (
-          <details
-            key={kategori.kunci}
-            open={kategori.kunci === "agama"}
-            className="rounded-xl border border-garis bg-white"
-          >
-            <summary className="cursor-pointer list-none px-5 py-4 font-semibold [&::-webkit-details-marker]:hidden">
-              {kategori.judul}
-              <span className="ml-2 text-sm font-normal text-tinta-redup">
-                {kategori.variabel.length} golongan
-              </span>
-            </summary>
-            <div className="border-t border-garis px-5 pb-5 pt-4">
-              <p className="mb-3 text-sm text-tinta-redup">
-                {kategori.keterangan}
-              </p>
-              <table className="w-full">
-                <thead>
-                  <tr className="text-left text-sm text-tinta-redup">
-                    <th className="pb-2 font-medium">Golongan</th>
-                    <th className="w-40 pb-2 text-right font-medium">
-                      Jumlah (jiwa)
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {kategori.variabel.map((label, index) => (
-                    <tr
-                      key={label}
-                      className="border-t border-garis/70 align-middle"
-                    >
-                      <th className="py-2 pr-4 text-left font-medium">
-                        <label htmlFor={`n-${kategori.kunci}-${index}`}>
-                          {label}
-                        </label>
-                      </th>
-                      <td className="py-2">
-                        <InputAngka
-                          id={`n-${kategori.kunci}-${index}`}
-                          name={`n-${kategori.kunci}-${index}`}
-                          nilai={nilai[label] ?? 0}
-                          label={`${kategori.judul}: ${label}`}
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </details>
-        );
-      })}
+      ).map((kategori) => (
+        <SeksiLipat
+          key={kategori.kunci}
+          judul={kategori.judul}
+          jumlah={kategori.variabel.length}
+          satuan="golongan"
+          bukaAwal={kategori.kunci === "agama"}
+        >
+          <div className="divide-y divide-garis/70">
+            {kategori.variabel.map((label, index) => (
+              <div
+                key={label}
+                className="grid grid-cols-[minmax(0,1fr)_9rem] items-center gap-3 py-3 sm:gap-4"
+              >
+                <label
+                  htmlFor={`n-${kategori.kunci}-${index}`}
+                  className="font-medium text-tinta"
+                >
+                  {label}
+                </label>
+                <InputAngka
+                  id={`n-${kategori.kunci}-${index}`}
+                  name={`n-${kategori.kunci}-${index}`}
+                  nilai={(nilaiAwal[kategori.kunci] ?? {})[label] ?? 0}
+                  label={`${kategori.judul}: ${label}`}
+                />
+              </div>
+            ))}
+          </div>
+        </SeksiLipat>
+      ))}
 
-      <div className="sticky bottom-0 flex flex-wrap items-center gap-4 border-t border-garis bg-latar py-4">
+      {/* --- Bar simpan lengket --- */}
+      <div className="sticky bottom-0 z-10 -mx-1 flex flex-wrap items-center gap-4 border-t border-garis bg-latar/95 px-1 py-4 backdrop-blur">
         <button
           type="submit"
           disabled={sedang}
-          className="rounded-lg bg-hijau-utama px-6 py-2.5 font-semibold text-white hover:bg-hijau-pekat disabled:opacity-60"
+          className="inline-flex min-h-11 items-center rounded-lg bg-hijau-utama px-6 py-2.5 font-semibold text-white hover:bg-hijau-pekat disabled:opacity-60"
         >
-          {sedang ? "Menyimpan..." : "Simpan data penduduk"}
+          {sedang ? "Menyimpan…" : "Simpan data penduduk"}
         </button>
         {hasil && (
           <p

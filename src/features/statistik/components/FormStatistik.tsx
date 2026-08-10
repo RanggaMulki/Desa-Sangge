@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { simpanStatistik, type HasilSimpan } from "../actions";
+import { useNotifHasil } from "@/features/admin/components/notifikasi";
 import { ANGKA_DESA } from "../angka";
 
 /**
@@ -25,14 +26,10 @@ export function FormStatistik({
     simpanStatistik,
     null,
   );
+  useNotifHasil(hasil);
 
   return (
     <form action={aksi} className="space-y-6">
-      <div className="rounded-lg bg-permukaan p-4 text-tinta-redup">
-        Isi angkanya saja — nama dan satuannya sudah tetap, jadi tidak bisa
-        salah ketik. Yang dikosongkan tidak ditampilkan di website.
-      </div>
-
       <div className="rounded-xl border border-garis bg-white p-5 sm:p-6">
         <table className="w-full">
           <thead>
@@ -90,9 +87,6 @@ export function FormStatistik({
             defaultValue={tahunAwal}
             className="w-28 rounded-lg border border-garis bg-white px-3 py-2 text-right tabular-nums focus:border-hijau-utama focus:outline-none focus:ring-2 focus:ring-hijau-muda"
           />
-          <p className="text-sm text-tinta-redup">
-            Berlaku untuk semua angka di atas.
-          </p>
         </div>
       </div>
 
