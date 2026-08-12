@@ -6,6 +6,7 @@ import { VideoProfil } from "@/features/beranda/components/VideoProfil";
 import { PerangkatRingkas } from "@/features/beranda/components/PerangkatRingkas";
 import { PotensiDesa } from "@/features/beranda/components/PotensiDesa";
 import { AgendaTerdekat } from "@/features/beranda/components/AgendaTerdekat";
+import { SkemaOrganisasi } from "@/features/tata-letak/components/SkemaOrganisasi";
 
 export const metadata: Metadata = {
   title: "Beranda",
@@ -50,6 +51,7 @@ export const revalidate = 3600;
 export default function Beranda() {
   return (
     <>
+      <SkemaOrganisasi />
       <Hero />
       <StripStatistik />
       <SambutanKepalaDesa />

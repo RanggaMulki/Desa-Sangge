@@ -1,4 +1,4 @@
-import DOMPurify from "isomorphic-dompurify";
+import sanitizeHtml from "sanitize-html";
 
 /**
  * Membersihkan HTML sebelum dirender ke halaman.
@@ -15,6 +15,12 @@ import DOMPurify from "isomorphic-dompurify";
  * Daftar tagnya dibatasi, bukan diblokir satu per satu. Memblokir daftar tag
  * berbahaya selalu ketinggalan dari cara baru yang ditemukan orang; mengizinkan
  * daftar pendek yang memang dipakai editor jauh lebih mudah dijaga benar.
+ *
+ * Memakai `sanitize-html`, BUKAN DOMPurify + jsdom. DOMPurify butuh DOM, dan di
+ * server ia menyeret jsdom — yang salah satu dependensinya (@exodus/bytes)
+ * pindah ke ESM murni dan bikin build produksi Vercel gagal dimuat
+ * (ERR_REQUIRE_ESM). `sanitize-html` mengurai HTML dengan parser murni tanpa
+ * DOM, jadi tidak ada jsdom sama sekali dan aman dijalankan di server.
  */
 const TAG_DIIZINKAN = [
   "p",
@@ -57,10 +63,17 @@ const ATRIBUT_DIIZINKAN = [
 ];
 
 export function bersihkanHtml(html: string): string {
-  return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: TAG_DIIZINKAN,
-    ALLOWED_ATTR: ATRIBUT_DIIZINKAN,
-    // Menutup javascript:, data:, dan vbscript: pada href maupun src.
-    ALLOWED_URI_REGEXP: /^(?:https?:|mailto:|tel:|#|\/)/i,
+  return sanitizeHtml(html, {
+    allowedTags: TAG_DIIZINKAN,
+    // Atribut yang sama diizinkan untuk semua tag ("*"), meniru daftar tunggal
+    // ALLOWED_ATTR pada konfigurasi lama.
+    allowedAttributes: { "*": ATRIBUT_DIIZINKAN },
+    // Hanya skema ini yang boleh muncul di href/src. Skema lain — termasuk
+    // javascript:, data:, dan vbscript: — dibuang. URL relatif (diawali "/"
+    // atau "#") tetap lolos karena tidak memuat skema.
+    allowedSchemes: ["http", "https", "mailto", "tel"],
+    // Tag terlarang dibuang seluruhnya beserta isinya yang berbahaya, bukan
+    // disisakan sebagai teks mentah.
+    disallowedTagsMode: "discard",
   });
 }

@@ -23,41 +23,70 @@ import {
  * klien, build langsung gagal. Pola yang sama dipakai features/auth/session.ts.
  */
 
-const {
-  R2_ACCOUNT_ID,
-  R2_ACCESS_KEY_ID,
-  R2_SECRET_ACCESS_KEY,
-  R2_BUCKET,
-  R2_PUBLIC_URL,
-} = process.env;
+type KonfigurasiR2 = {
+  klien: S3Client;
+  bucket: string;
+  /** Tanpa garis miring di ujung, supaya penggabungan URL tidak dobel. */
+  alamatPublik: string;
+};
 
-// Diperiksa sekali saat modul dimuat, bukan saat unggahan pertama, supaya
-// kesalahan konfigurasi ketahuan sedini mungkin dan pesannya jelas.
-if (
-  !R2_ACCOUNT_ID ||
-  !R2_ACCESS_KEY_ID ||
-  !R2_SECRET_ACCESS_KEY ||
-  !R2_BUCKET ||
-  !R2_PUBLIC_URL
-) {
-  throw new Error(
-    "Konfigurasi Cloudflare R2 belum lengkap. Isi R2_ACCOUNT_ID, " +
-      "R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET, dan R2_PUBLIC_URL " +
-      "di .env.local. Lihat langkahnya di docs/SETUP.md.",
-  );
+let konfigTersimpan: KonfigurasiR2 | null = null;
+
+/**
+ * Membaca dan memvalidasi konfigurasi R2 SAAT DIPAKAI, bukan saat modul dimuat.
+ *
+ * Dulu pemeriksaan ini dijalankan di level modul (langsung `throw` saat file
+ * di-import). Akibatnya, kalau satu env R2 kurang di produksi, SETIAP hal yang
+ * menyentuh R2 — tiap unggahan dan rute penyaji /media — ikut crash dengan
+ * "Server Components render" yang sulit dilacak, sama seperti bug jsdom.
+ *
+ * Dengan dipindah ke sini, lemparannya terjadi di dalam fungsi dan tertangkap
+ * try/catch pemanggil (lihat features/media/actions.ts): pengurus melihat pesan
+ * "Berkas gagal diunggah", pesan asli soal env yang kurang tetap tercatat di
+ * log server, dan rute /media cukup membalas 404 alih-alih tumbang.
+ *
+ * Klien-nya dibuat sekali lalu disimpan, jadi tidak dirakit ulang tiap unggah.
+ */
+function konfigurasiR2(): KonfigurasiR2 {
+  if (konfigTersimpan) return konfigTersimpan;
+
+  const {
+    R2_ACCOUNT_ID,
+    R2_ACCESS_KEY_ID,
+    R2_SECRET_ACCESS_KEY,
+    R2_BUCKET,
+    R2_PUBLIC_URL,
+  } = process.env;
+
+  if (
+    !R2_ACCOUNT_ID ||
+    !R2_ACCESS_KEY_ID ||
+    !R2_SECRET_ACCESS_KEY ||
+    !R2_BUCKET ||
+    !R2_PUBLIC_URL
+  ) {
+    throw new Error(
+      "Konfigurasi Cloudflare R2 belum lengkap. Isi R2_ACCOUNT_ID, " +
+        "R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET, dan R2_PUBLIC_URL " +
+        "di environment (Vercel: Settings → Environment Variables, scope " +
+        "Production). Lihat langkahnya di docs/SETUP.md.",
+    );
+  }
+
+  konfigTersimpan = {
+    klien: new S3Client({
+      region: "auto",
+      endpoint: `https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+      credentials: {
+        accessKeyId: R2_ACCESS_KEY_ID,
+        secretAccessKey: R2_SECRET_ACCESS_KEY,
+      },
+    }),
+    bucket: R2_BUCKET,
+    alamatPublik: R2_PUBLIC_URL.replace(/\/+$/, ""),
+  };
+  return konfigTersimpan;
 }
-
-// Tanpa garis miring di ujung, supaya penggabungan URL di bawah tidak dobel.
-const ALAMAT_PUBLIK = R2_PUBLIC_URL.replace(/\/+$/, "");
-
-const r2 = new S3Client({
-  region: "auto",
-  endpoint: `https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-  credentials: {
-    accessKeyId: R2_ACCESS_KEY_ID,
-    secretAccessKey: R2_SECRET_ACCESS_KEY,
-  },
-});
 
 /**
  * Unggah satu berkas ke R2.
@@ -72,16 +101,17 @@ export async function unggahKeR2(
   data: Buffer | Uint8Array,
   tipe: string,
 ): Promise<{ url: string; kunci: string }> {
-  await r2.send(
+  const { klien, bucket, alamatPublik } = konfigurasiR2();
+  await klien.send(
     new PutObjectCommand({
-      Bucket: R2_BUCKET,
+      Bucket: bucket,
       Key: kunci,
       Body: data,
       ContentType: tipe,
     }),
   );
 
-  return { url: `${ALAMAT_PUBLIK}/${kunci}`, kunci };
+  return { url: `${alamatPublik}/${kunci}`, kunci };
 }
 
 /**
@@ -93,9 +123,10 @@ export async function unggahKeR2(
  * memakan kuota.
  */
 export async function hapusDariR2(kunci: string): Promise<void> {
-  await r2.send(
+  const { klien, bucket } = konfigurasiR2();
+  await klien.send(
     new DeleteObjectCommand({
-      Bucket: R2_BUCKET,
+      Bucket: bucket,
       Key: kunci,
     }),
   );
@@ -117,8 +148,9 @@ export async function ambilDariR2(
   kunci: string,
 ): Promise<{ bytes: Uint8Array; tipe?: string } | null> {
   try {
-    const hasil = await r2.send(
-      new GetObjectCommand({ Bucket: R2_BUCKET, Key: kunci }),
+    const { klien, bucket } = konfigurasiR2();
+    const hasil = await klien.send(
+      new GetObjectCommand({ Bucket: bucket, Key: kunci }),
     );
     if (!hasil.Body) return null;
     const bytes = await hasil.Body.transformToByteArray();
